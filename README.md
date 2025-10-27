@@ -29,10 +29,11 @@ User Input -> Risk Scoring Model (Skills + AI Substitution Index) -> Transferabl
 ### 1. Risk Scoring Model
 
 Risk is computed using three weighted factors:
-Component     |       Source Data                                         |   Purpose
-Province Risk | AI exposure levels by Canadian province                   |	Geographic vulnerability
-Ethnicity Risk| Exposure risk by visible minority groups                  |	Equity context
-Job Risk	  | Based on skills & abilities mapped to AI substitution risk|	Automation risk from skills
+Component | Source Data | Purpose
+|---|---|---|
+Province Risk | AI exposure levels by Canadian province | Geographic vulnerability
+Ethnicity Risk | Exposure risk by visible minority groups | Equity context
+Job Risk | Based on skills & abilities mapped to AI substitution risk | Automation risk from skills
 
 We use:
 - SkillsAbilitiesMerged.csv (900 occupations × 82 skill dimensions)
