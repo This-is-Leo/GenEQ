@@ -19,3 +19,8 @@ CATEGORY_MAP_ENABLED = True
 
 # Normalization behavior
 NORMALIZE_JOB_RISK = True
+
+# Weights for final score 
+W_PROVINCE  = 0.10
+W_ETHNICITY = 0.15
+W_JOB       = 0.75
