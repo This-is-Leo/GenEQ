@@ -24,15 +24,7 @@ Feature	Description
 - Transparent Design: Explainable logic using open data + fair scoring
 
 ## 🏛️ Architecture Overview
-User Input
-   ↓
-Risk Scoring Model (Skills + AI Substitution Index)
-   ↓
-Transferable Skills Engine (Coming Soon)
-   ↓
-Equity + Resilience Ranking (Coming Soon)
-   ↓
-Pathway Output (LLM – Fine-tuned)
+User Input -> Risk Scoring Model (Skills + AI Substitution Index) -> Transferable Skills Engine -> Pathway Output (LLM – Fine-tuned)
 
 ## Logic Behind Risk Scoring Model
 
