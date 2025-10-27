@@ -41,3 +41,5 @@ if st.button("Calculate Risk", type="primary"):
             st.write({"Inputs": data["inputs"], "Components (0–1)": data["components"], "Weights": data["weights"], "Band": data["band"]})
     except Exception as e:
         st.error(str(e))
+
+        
