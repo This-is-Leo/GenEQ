@@ -23,7 +23,7 @@ from typing import Dict
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from .compute import normalize_dimension, compute_job_risk
+from backend.compute import normalize_dimension, compute_job_risk
 from backend.config import DB_PATH
 
 # ------------------------------------------------------------

@@ -20,8 +20,6 @@ from backend.config import (
     NOC_FILE,
     FEATURES_FILE,
     RUBRIC_FILE,
-    NOC_JOB_ID_COL,
-    NOC_TITLE_COL,
 )
 
 SCHEMA_FILE = "backend/schema.sql"
