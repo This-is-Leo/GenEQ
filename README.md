@@ -44,9 +44,9 @@ We use:
 - Weighted formula reduces bias by factoring human-centric abilities.
 
 ## Tech Stack
-Language: Python 3.10+
-Frontend: Streamlit
-Database: SQLite
+- Language: Python 3.10+
+- Frontend: Streamlit
+- Database: SQLite
 
 ## Run Locally
 1. Clone and Install
