@@ -26,8 +26,8 @@ Feature	Description
 ## 🏛️ Architecture Overview
 User Input -> Risk Scoring Model (Skills + AI Substitution Index) -> Transferable Skills Engine -> Pathway Output (LLM – Fine-tuned)
 
-## Logic Behind Risk Scoring Model
-
+### Risk Scoring Model
+```
 Risk is computed using three weighted factors:
 Component     |       Source Data                                         |   Purpose
 ----------------------------------------------------------------------------------------------------
@@ -42,6 +42,7 @@ We use:
     - Routine → high AI risk
     - Physical / Creative / Social → reduced AI risk
 - Weighted formula reduces bias by factoring human-centric abilities.
+```
 
 ## Tech Stack
 Language: Python 3.10+
