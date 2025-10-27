@@ -1,0 +1,83 @@
+Type,Name,Substitution_Index,Complementarity_Index
+Skill,Reading Comprehension,3,5
+Skill,Writing,3,5
+Skill,Numeracy,4,5
+Skill,Digital Literacy,3,5
+Skill,Oral Communication: Active Listening,2,5
+Skill,Oral Communication: Oral Comprehension,2,5
+Skill,Oral Communication: Oral Expression,2,3
+Skill,Critical Thinking,1,4
+Skill,Decision Making,1,4
+Skill,Evaluation,2,4
+Skill,Learning and Teaching Strategies,2,5
+Skill,Problem Solving,2,4
+Skill,Systems Analysis,2,5
+Skill,Digital Production,3,4
+Skill,Preventative Maintenance,2,4
+Skill,Equipment and Tool Selection,1,4
+Skill,Operation and Control,2,3
+Skill,Operation Monitoring of Machinery and Equipment,3,4
+Skill,Quality Control Testing,3,4
+Skill,Repairing,1,3
+Skill,Setting up,1,3
+Skill,Product Design,2,5
+Skill,Troubleshooting,2,4
+Skill,Management of Financial Resources,2,4
+Skill,Management of Material Resources,2,4
+Skill,Management of Personnel Resources,1,4
+Skill,Monitoring,3,4
+Skill,Time Management,1,3
+Skill,Coordinating,1,3
+Skill,Instructing,2,4
+Skill,Negotiating,1,3
+Skill,Persuading,1,3
+Skill,Social Perceptiveness,1,3
+Ability,Categorization Flexibility,4,5
+Ability,Deductive Reasoning,2,5
+Ability,Fluency of Ideas,3,5
+Ability,Inductive Reasoning,2,5
+Ability,Information Ordering,4,5
+Ability,Mathematical Reasoning,3,5
+Ability,Memorizing,5,3
+Ability,Multitasking,1,2
+Ability,Numerical Ability,4,5
+Ability,Pattern Identification,4,5
+Ability,Pattern Organization Speed,4,5
+Ability,Perceptual Speed,3,4
+Ability,Problem Identification,2,5
+Ability,Selective Attention,1,2
+Ability,Spatial Orientation,1,2
+Ability,Spatial Visualization,2,4
+Ability,Verbal Ability,2,5
+Ability,Written Comprehension,3,5
+Ability,Written Expression,4,5
+Ability,Body Flexibility,1,1
+Ability,Dynamic Strength,1,2
+Ability,Explosive Strength,1,1
+Ability,Gross Body Coordination,1,2
+Ability,Gross Body Equilibrium,1,2
+Ability,Multi-Limb Coordination,1,2
+Ability,Stamina,1,2
+Ability,Static Strength,1,2
+Ability,Trunk Strength,1,2
+Ability,Arm-Hand Steadiness,1,2
+Ability,Control of Settings,1,4
+Ability,Finger Dexterity,1,2
+Ability,Manual Dexterity,1,2
+Ability,Multi-Signal Response,1,3
+Ability,Rate Control,1,3
+Ability,Reaction Time,1,2
+Ability,Speed of Limb Movement,1,1
+Ability,Finger-Hand-Wrist Motion,1,1
+Ability,Auditory Attention,1,4
+Ability,Depth Perception,1,3
+Ability,Far Vision,1,3
+Ability,Glare Tolerance,1,1
+Ability,Hearing Sensitivity,1,3
+Ability,Near Vision,1,3
+Ability,Night Vision,1,1
+Ability,Peripheral Vision,1,2
+Ability,Speech Clarity,2,4
+Ability,Speech Recognition,4,5
+Ability,Sound Localization,1,3
+Ability,Colour Perception,2,3

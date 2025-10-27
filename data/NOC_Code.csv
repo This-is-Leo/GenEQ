@@ -1,0 +1,902 @@
+NOC_CODE,OASIS_LABEL
+0001,Legislators
+0001,Senior government managers and officials
+0001,"Senior managers - construction, transportation, production and utilities"
+0001,"Senior managers - financial, communications and other business services"
+0001,"Senior managers - health, education, social and community services and membership organizations"
+0001,"Senior managers - trade, broadcasting and other services"
+1001,Financial managers
+1001,Human resources managers
+1001,Other administrative services managers
+1001,Purchasing managers
+1002,Advertising managers
+1002,Banking and other investment managers
+1002,Credit managers
+1002,E-business managers
+1002,Insurance managers
+1002,Marketing managers
+1002,Mortgage broker managers
+1002,Other business services managers
+1002,Public relation managers
+1002,Real estate service managers
+1002,Securities manager
+1003,Telecommunication carriers managers
+1110,Accountants
+1110,Brokers
+1110,Financial Underwriters
+1110,Financial advisors
+1110,Financial analysts
+1110,Financial auditors
+1110,Financial examiners and inspectors
+1110,Financial investigators
+1110,Investment analysts
+1110,Mortgage brokers
+1110,Securities agents and investment dealers
+1110,Trust officers
+1120,Human resources professionals
+1120,Professional occupations in business management consulting
+1120,"Professional occupations in marketing, advertising and public relations"
+1201,"Supervisors, finance and insurance office workers"
+1201,"Supervisors, general office and administrative support workers"
+1201,"Supervisors, library, correspondence and related information workers"
+1201,"Supervisors, supply chain, tracking and scheduling coordination occupations"
+1210,Conference and event planners
+1210,Excise tax revenue officers
+1210,Executive assistants
+1210,Government benefits services officers
+1210,Human resources and recruitment officers
+1210,Procurement and purchasing agents and officers
+1211,Court reporters
+1211,Health information management occupations
+1211,Medical transcriptionists
+1211,Records management technicians
+1211,Statistical officers and related research support occupations
+1220,Accounting technicians and bookkeepers
+1220,Appraisers
+1220,Assessors
+1220,Business valuators
+1220,Insurance adjusters
+1220,Insurance claims examiners
+1220,Insurance underwriters
+1310,Administrative officers
+1310,Payroll administrators
+1310,Property administrators
+1311,Administrative assistants
+1311,Legal administrative assistants
+1311,Medical administrative assistants
+1320,Custom brokers
+1320,Production logistics coordinators
+1320,Ship brokers
+1320,Transportation logistics coordinators
+1410,Court clerks and related court services occupations
+1410,File clerks
+1410,General office support workers
+1410,Hospital admitting clerks
+1410,Personnel clerks
+1410,Receptionists
+1410,Switchboard and answering service operators
+1410,Telephone operators
+1411,Data entry clerks
+1411,Desktop publishing operators
+1411,Statistical clerks
+1411,Survey interviewers
+1411,Typesetting input and output operators
+1420,Accounting and related clerks
+1420,Bank clerks
+1420,Collection clerks
+1420,Insurance clerks
+1420,Other financial clerks
+1430,Classified advertising clerks
+1430,Correspondence clerks
+1430,Library assistants and clerks
+1430,Proofreaders and editorial assistants
+1430,Readers and press clippers
+1430,Regulatory clerks
+1440,Dispatchers
+1440,Inventory control workers
+1440,Production logistics workers
+1440,Purchasing control workers
+1440,Shippers and receivers
+1440,Storekeepers and partspersons
+1440,Transportation route and crew schedulers
+2001,Architecture and urban planning managers
+2001,Computer and information systems managers
+2001,Engineering managers
+2001,Science Managers
+2110,Astronauts
+2110,Astronomers
+2110,Chemists
+2110,Geoscientists
+2110,Materials scientists
+2110,Metallurgists
+2110,Meteorologists and climatologists
+2110,Oceanographers
+2110,Physicists
+2110,Soil scientists
+2111,"Agricultural representatives, consultants and specialists"
+2111,Biologists
+2111,Forestry professionals
+2111,Microbiologists and cell and molecular biologists
+2112,Public and environmental health and safety professionals
+2120,Architects
+2120,Land surveyors
+2120,Landscape architects
+2120,Urban and land use planners
+2121,Actuaries
+2121,Data scientists
+2121,Mathematicians
+2121,Statisticians
+2122,Business system specialists
+2122,Cybersecurity specialists
+2122,Data administrators
+2122,Database analysts
+2122,Information systems specialists
+2123,Computer systems developers and programmers
+2123,Software developers and programmers
+2123,Software engineers and designers
+2123,Web designers
+2123,Web developers and programmers
+2130,Civil engineers
+2130,Mechanical engineers
+2131,Computer and telecommunications hardware engineers
+2131,Electrical and electronics engineers
+2131,Network system and data communication engineers
+2132,Chemical engineers
+2132,Industrial and manufacturing engineers
+2132,Metallurgical and materials engineers
+2133,Geological engineers
+2133,Mining engineers
+2133,Petroleum engineers
+2139,Aerospace engineers
+2139,Agricultural and bio-resource engineers
+2139,Biomedical engineers
+2139,Engineering physicists and engineering scientists
+2139,Marine and naval engineers
+2139,Textile engineers
+2210,Chemical technicians
+2210,Chemical technologists
+2210,Geological and mineral technicians
+2210,Geological and mineral technologists
+2211,Arborists and tree service technicians
+2211,Biological technicians
+2211,Biological technologists
+2211,Conservation and fishery officers
+2211,Fish and fish products inspectors
+2211,Forestry technologists and technicians
+2211,Fruit and vegetables inspectors
+2211,Golf course superintendents
+2211,Grain inspectors
+2211,Horticulturists
+2211,Landscape designers and landscape architectural technicians and technologists
+2211,Landscape gardeners
+2211,Landscapers
+2211,Lawn care specialists
+2211,Meat inspectors
+2211,Plant protection inspectors
+2221,Aerial survey and remote sensing technologists and technicians
+2221,Architectural technologists and technicians
+2221,Cartographic technologists and technicians
+2221,Drafting technicians
+2221,Drafting technologists
+2221,Geographic information system (GIS) technologists and technicians
+2221,Industrial designers
+2221,Land survey technicians
+2221,Land survey technologists
+2221,Meteorological technologists and technicians
+2221,Photogrammetric technologists and technicians
+2222,Computer and network operators
+2222,Information systems testing technicians
+2222,User support technicians
+2222,Web technicians
+2223,Airworthiness inspectors
+2223,Construction inspectors
+2223,"Inspectors, weights and measures"
+2223,Motor Vehicle defects investigators
+2223,Non-destructive testers and inspectors
+2223,Occupational health and safety specialists
+2223,Oil and gas drilling rig inspectors
+2223,Railway accident investigation officers
+2230,Civil engineering technicians
+2230,Civil engineering technologists
+2230,Construction estimators
+2230,Industrial engineering and manufacturing technicians
+2230,Industrial engineering and manufacturing technologists
+2230,Mechanical engineering technicians
+2230,Mechanical engineering technologists
+2231,Aircraft electrical mechanics and technicians
+2231,Aircraft instrument mechanics and technicians
+2231,Avionics inspectors
+2231,Avionics mechanics and technicians
+2231,Electrical and electronics engineering technicians
+2231,Electrical and electronics engineering technologists
+2231,Electronic service technicians (household and business equipment)
+2231,Industrial instrument technicians and mechanics
+3001,Managers in health care
+3110,Allergists and immunologists
+3110,Anesthesiologists
+3110,Dermatologists
+3110,General practitioners and family physicians
+3110,General surgery
+3110,Hospitalists
+3110,"Internists, general"
+3110,Neurologists
+3110,Nuclear medicine physicians
+3110,Obstetricians and gynecologists
+3110,Ophthalmologists
+3110,Other specialists in clinical medicine
+3110,Other specialists in surgery
+3110,"Pediatricians, general"
+3110,Physical medicine and rehabilitation physicians
+3110,Preventive medicine physicians
+3110,Psychiatrists
+3110,Radiologists
+3110,"Specialists in laboratory medicine, including pathologists"
+3110,Urologists
+3110,Veterinarians
+3111,Audiologists
+3111,"Dentists, General"
+3111,Optometrists
+3111,Oral and Maxillofacial Surgeons
+3111,Orthodontists
+3111,Prosthodontists
+3111,Speech language pathologists
+3112,Community pharmacists and hospital pharmacists
+3112,Dietitians and nutritionists
+3112,Industrial pharmacists
+3120,Chiropodists and diploma or first-degree trained podiatrists
+3120,Chiropractors
+3120,Doctors of Podiatric Medicine
+3120,Doctors of naturopathics medicine
+3120,Doctors of osteopathic medicine
+3120,Kinesiologists and exercise therapists
+3120,Occupational therapists
+3120,Physiotherapists
+3120,Psychologists
+3120,Recreational therapists
+3130,Clinical nurses
+3130,Community Health Nurses
+3130,General duty registered nurses
+3130,Genetic counsellors
+3130,Midwives
+3130,Nurse practitioners
+3130,Nursing coordinators and supervisors
+3130,Nursing researchers and consultants
+3130,Occupational health nurses
+3130,Orthoptists
+3130,Pathologist assistants
+3130,Physician Assistants
+3130,Registered psychiatric nurses
+3210,Animal health technologists and veterinary technicians
+3210,Cardiopulmonary  technologists
+3210,Clinical perfusionists
+3210,Communicative disorders assistants and speech-language pathology assistants
+3210,Hearing instrument practitioners
+3210,Licensed practical nurses
+3210,Operating room technicians
+3210,Ophthalmic technologists and technicians
+3210,Opticians
+3210,Paramedical occupations
+3210,Physical Rehabilitation therapists
+3210,Physiotherapy assistants and occupational therapy assistants
+3210,Respiratory therapists
+3211,Dental hygienists
+3211,Dental technologists and technicians
+3211,Dental therapists
+3211,Denturists
+3212,Cardiology technologists
+3212,Dietary technicians
+3212,Electrophysiological technologists
+3212,Magnetic Resonance Technologist
+3212,Medical laboratory technologists
+3212,Medical sonographers
+3212,Nuclear medicine technologists
+3212,Ocularists
+3212,Pharmacy technicians
+3212,Prosthetic and orthotic technicians
+3212,Prosthetists and orthotists
+3212,Radiation therapists
+3212,Radiological technologists
+3220,Acupuncturists
+3220,Herbalists
+3220,Holistic nutritionists
+3220,Homeopaths
+3220,Massage therapists
+3220,Naturotherapists
+3220,Osteopathic manual practitioners
+3220,Reflexologists
+3220,Traditional Chinese medicine practitioners
+3310,Audiometric technicians
+3310,Blood donor clinic assistants
+3310,Dental Laboratory Assistants
+3310,Dental assistants
+3310,Medical laboratory assistants and related technical occupations
+3310,Morgue attendants
+3310,"Nurse aides, orderlies and patient service associates"
+3310,Ophthalmic assistants
+3310,Optical/ophthalmic laboratory technicians and assistants
+3310,Orthopedic technologists
+3310,Pharmacy technical assistants and pharmacy assistants
+3310,Rehabilitation aides
+3310,Sterile processing technicians
+4001,"Government managers - economic analysis, policy development and program administration"
+4001,Government managers - education policy development and program administration
+4001,Government managers - health and social policy development and program administration
+4001,Other managers in public administration
+4002,Administrator of vocational training schools
+4002,Administrators of elementary and secondary education
+4002,Faculty administrators
+4002,Registrars
+4002,School principals
+4003,"Managers in social, community and correctional services"
+4004,Commissioned officers of the Canadian Armed Forces
+4004,Commissioned police officers and related occupations in public protection services
+4004,Fire chiefs and senior firefighting officers
+4110,Judges
+4110,Lawyers and Quebec notaries
+4120,Post-secondary research assistants
+4120,Post-secondary teaching assistants
+4120,University professors and lecturers
+4121,College and other vocational instructors
+4122,Elementary school and kindergarten teachers
+4122,Secondary school teachers
+4130,Religious leaders
+4130,Social workers
+4130,Therapists in counselling and related specialized therapies
+4131,Coroners and medical examiners
+4131,Police investigators
+4131,Probation and parole officers
+4132,Career development practitioners and career counsellors (except education)
+4132,Educational counsellors
+4140,Anthropologists
+4140,Archaeologists
+4140,Business development officers and market researchers and analysts
+4140,Economists and economic policy researchers and analysts
+4140,"Education policy researchers, consultants and program officers"
+4140,Ergonomists
+4140,Geographers
+4140,"Health policy researchers, consultants and program officers"
+4140,Historians
+4140,Home economists
+4140,Housing policy analysts
+4140,Immigration and citizenship consultants
+4140,International aid and development project officers
+4140,Linguists
+4140,Occupational or industrial hygienists
+4140,Other social science professionals
+4140,Patent agents
+4140,Political scientists
+4140,Program officers unique to government
+4140,Psychometricians
+4140,"Recreation, sports and fitness consultants"
+4140,"Recreation, sports and fitness policy analysts"
+4140,"Recreation, sports and fitness program supervisors"
+4140,Science policy and program officers
+4140,Social policy researchers
+4140,Social service planners
+4140,Social survey researchers
+4140,Sociologists
+4140,Technology transfer officers
+4210,Firefighters
+4210,Police officers (except commissioned)
+4210,Specialized members of the Canadian Armed Forces
+4220,Early childhood educator assistants
+4220,Early childhood educators
+4220,Independent paralegals
+4220,Instructors of persons with disabilities
+4220,Justice of the peace
+4220,Notaries public
+4220,Paralegals
+4220,Religion workers
+4220,Social and community service workers
+4220,Trademark agents
+4310,Driver's license examiners
+4310,Driving instructors
+4310,Elementary and secondary school teacher assistants
+4310,Modelling instructors
+4310,Sewing instructors
+4320,Animal control officer
+4320,Border services and customs officers
+4320,By-law enforcement officers
+4320,Commercial transport inspectors
+4320,Correctional service officers
+4320,Garbage collection inspectors
+4320,Immigration officers
+4320,Liquor licence inspectors
+4320,Operations Members of the Canadian Armed Forces
+4320,Parking control officers
+4320,Sheriffs and bailiffs
+4320,Taxi inspectors
+4320,Zoning inspectors
+4410,Foster parents
+4410,Home child care providers
+4410,"Home support workers, caregivers and related occupations"
+4420,Primary combat members of the Canadian Armed Forces
+4510,Crossing guards
+4510,Student monitors
+5001,"Library, archive, museum and art gallery managers"
+5001,"Managers - publishing, motion pictures, broadcasting and performing arts"
+5001,"Recreation, sports and fitness program and service directors"
+5110,Archivists
+5110,Conservators
+5110,Curators
+5110,Librarians
+5111,Content writers (non-technical)
+5111,Copywriters
+5111,Editors
+5111,Interpreters
+5111,Journalists
+5111,"Novelists, playwrights, script writers, poets and other creative writers"
+5111,Sign language Interpreters
+5111,Technical writers
+5111,Terminologists
+5111,Translators and translator-revisers
+5112,Arrangers
+5112,Art directors
+5112,Choreographers
+5112,Composers
+5112,Conductors
+5112,Directors
+5112,Directors of photography
+5112,Film editors
+5112,"Film, radio, television and video game producers"
+5112,Musicians
+5112,Record producers
+5112,Singers
+5112,Teachers of music or voice
+5210,Library Technicians
+5210,Public archive technicians
+5211,Announcers and other broadcasters
+5211,Audio and video recording technicians
+5211,Broadcast technicians
+5211,Costumiers
+5211,Film and video camera operators
+5211,Floor managers
+5211,Gaffers and lighting technicians
+5211,Graphic arts technicians
+5211,Key grips
+5211,Make-up artists
+5211,Settings shop foremen and property masters
+5211,Stunt co-ordinators and special effects technicians
+5212,Graphic designers
+5212,Illustrators
+5212,Interior designers and interior decorators
+5310,Conservation and restoration technicians
+5310,"Curatorial assistants, museum extension officers, museology technicians and museum registrars and cataloguers"
+5310,Museum interpreters
+5310,Preparators and picture framers
+5310,Taxidermists
+5311,Camera crane operators
+5311,Dressers
+5311,Grips and riggers
+5311,Motion picture projectionists
+5311,Photographers
+5311,Production assistants
+5311,Props persons and set builders
+5311,Scripts assistants
+5312,Acting teachers
+5312,Actors and comedians
+5312,Art instructors and teachers
+5312,Artistic floral arrangers
+5312,Carvers
+5312,Circus and other performers
+5312,Craft instructors
+5312,Dance teachers
+5312,Dancers
+5312,Exhibit designers
+5312,Fashion designers
+5312,Glass blowers
+5312,Instrument makers
+5312,Metal art workers
+5312,Painters
+5312,"Patternmakers - textile, leather and fur products"
+5312,Potters
+5312,Sculptors
+5312,Stained glass artists
+5312,Theatre designers
+5312,Weavers
+5320,Athletes
+5320,Coaches
+5320,Sports officials and referees
+5320,Sports scouts
+5410,Fitness appraisers
+5410,Program leaders and instructors in recreation and sport
+5510,Buskers
+5510,Fashion Models
+5510,Influencers
+5510,Magicians and illusionists
+6001,Corporate sales managers
+6002,Retail and wholesale trade managers
+6003,Accommodation service managers
+6003,Restaurant and food service managers
+6004,Managers in customer and personal services
+6201,Retail sales supervisors
+6202,"Accommodation, travel, tourism and related services supervisors"
+6202,Cleaning supervisors
+6202,Customer service representatives supervisors (except financial services)
+6202,Customer service representatives supervisors - financial services
+6202,Executive housekeepers
+6202,Food service supervisors
+6202,Other services supervisors
+6210,Retail and wholesale buyers
+6210,Technical sales specialists - wholesale trade
+6220,Embalmers
+6220,Funeral directors
+6220,Head Chefs
+6220,Jewellers and related workers
+6220,Sous-Chefs
+6220,Specialist chefs
+6220,Watch repairers
+6310,Financial sales representatives
+6310,Insurance agents and brokers
+6310,Real estate agents and salespersons
+6320,Bakers
+6320,Butchers - retail and wholesale
+6320,Cooks
+6321,Barbers
+6321,Cosmeticians
+6321,Electrologists
+6321,Estheticians
+6321,Hair replacement technicians (non-medical)
+6321,Hairstylists
+6321,Manicurists and pedicurist
+6321,Scalp treatment specialists
+6321,Tattoo artists
+6322,Shoe repairers
+6322,Shoemakers
+6322,Upholsterers
+6410,Retail salespersons
+6410,Sales and account representatives - wholesale trade (non-technical)
+6410,Visual merchandisers
+6420,Furriers
+6420,Image consultants
+6420,Milliners
+6420,"Tailors, Dressmakers and Alterationists"
+6420,Wedding consultants
+6420,Weight loss consultants
+6430,Bartenders
+6430,Maîtres d'hôtel and hosts/hostesses
+6431,Airline cargo and freight agents
+6431,"Airline passenger, baggage and ticket agents"
+6431,Airline reservation agents
+6431,Cargo service representatives (except airline)
+6431,Flight attendants
+6431,"Flight pursers, customer service directors and passenger service directors"
+6431,Hotel front desk clerks
+6431,Ship pursers
+6431,Ticket agents and related clerks (except airline)
+6431,Travel counsellors
+6432,Casino workers
+6432,Outdoor sport and recreational guides
+6432,Tour guides
+6432,Travel guides
+6440,Customer services representatives - financial institutions
+6440,Other customer and information services representatives
+6440,Postal services representatives
+6441,Armoured car guards
+6441,Corporate security officers
+6441,Private investigators
+6441,Retail loss prevention officers
+6441,Security guards
+6510,Automotive and watercraft service station attendants
+6510,Cashiers
+6510,Demonstrators and direct distributors
+6510,Door-to-door salespersons and street vendors
+6510,"Store shelf stockers, clerks and order fillers"
+6510,Telephone solicitors and telemarketers
+6520,Dishwashers
+6520,Food and beverage servers
+6520,Food counter attendants and food preparers
+6520,Food service helpers
+6520,Kitchen helpers
+6520,Meat cutters and fishmongers - retail and wholesale
+6521,Amusement attraction operators
+6521,"Attendants in amusement, recreation and sport"
+6521,Facilities workers
+6521,Guest service attendants and baggage porters
+6521,Ship and train service attendants
+6522,Other support occupations in personal services
+6522,Pet groomers and animal care workers
+6531,Carpet and upholstery cleaners
+6531,Chimney cleaners and sandblasters
+6531,Furnace and ventilation system cleaners
+6531,Housekeepers
+6531,"Janitors, caretakers and heavy-duty cleaners"
+6531,Light duty cleaners
+6531,Vehicle cleaners
+6531,Window cleaners
+6532,Beauty salon attendants
+6532,Door attendants
+6532,Dry cleaning and laundry inspectors and assemblers
+6532,Dry cleaning and laundry machine operators
+6532,Funeral home attendants
+6532,"Ironing, pressing and finishing workers"
+6532,Laundromat attendants
+6532,Other elemental service workers
+6532,Parking lot attendants and car jockeys
+6532,Ticket takers and ushers
+7001,Construction managers
+7001,Facility operation managers
+7001,Home building and renovation managers
+7001,Maintenance managers
+7002,Postal and courier services managers
+7002,"Transportation managers, freight traffic"
+7002,"Transportation managers, operations"
+7201,"Contractors and supervisors, carpentry trades"
+7201,"Contractors and supervisors, electrical trades and telecommunications occupations"
+7201,"Contractors and supervisors, machining, metal forming, shaping and erecting trades and related occupations"
+7201,"Contractors and supervisors, other construction trades, installers, repairers and servicers"
+7201,"Contractors and supervisors, pipefitting trades"
+7202,"Contractors and supervisors, heavy equipment operator crews"
+7202,"Contractors and supervisors, mechanic trades"
+7202,"Supervisors, mail and message distribution occupations"
+7202,"Supervisors, motor transport and other ground transit operators"
+7202,"Supervisors, printing and related occupations"
+7202,"Supervisors, railway transport operations"
+7210,Boilermakers
+7210,Ironworkers
+7210,Machining and tooling inspectors
+7210,Machinists
+7210,Metal mould makers and patternmakers
+7210,Sheet metal workers
+7210,Structural metal and platework fabricators and fitters
+7210,Tool and die makers
+7210,Welders
+7210,"Welding, brazing and soldering machine  operators"
+7220,Electrical power line and cable workers
+7220,Electricians (except industrial and power system)
+7220,Industrial electricians
+7220,Power system electricians
+7220,Switch network installers and repairers
+7220,Telecommunications equipment technicians
+7220,Telecommunications line and cable installers and repairers
+7220,Telecommunications service testers
+7220,Telephone installers and repairers
+7220,Television cable service technicians
+7230,Gas fitters
+7230,Plumbers
+7230,Sprinkler system installers
+7230,Steamfitters and pipefitters
+7231,Cabinetmakers
+7231,Carpenters
+7232,Bricklayers
+7232,Insulators
+7240,Aircraft inspectors
+7240,Aircraft mechanics
+7240,Construction millwrights and industrial mechanics
+7240,Elevator constructors and mechanics
+7240,"Heating, refrigeration and air conditioning mechanics"
+7240,Heavy-duty equipment mechanics
+7240,Machine fitters
+7240,Railway carmen/women
+7240,Textile machinery mechanics and repairers
+7241,"Auto body collision, refinishing and glass technicians and damage repair estimators"
+7241,Automotive service technicians
+7241,"Mechanical repairers, motor vehicle manufacturing"
+7241,Transport truck and trailer mechanics
+7242,Electrical mechanics
+7242,Major appliance repairers/technicians
+7242,"Motorcycle, all-terrain vehicle and other related mechanics"
+7242,Oil and solid fuel heating mechanics
+7242,Other small engine and small equipment repairers
+7242,Recreation vehicle technicians
+7242,Small electrical appliance servicers and repairers
+7250,Crane operators
+7250,Water well drillers
+7260,Air pilots
+7260,Air traffic controllers
+7260,"Deck officers, water transport"
+7260,"Engineer officers, water transport"
+7260,Flight dispatchers
+7260,Flight engineers
+7260,Flight service specialists
+7260,Flying instructors
+7260,Marine traffic regulators
+7260,Railway traffic controllers
+7299,Commercial divers
+7299,Die setters
+7299,Gunsmiths
+7299,Locksmiths
+7299,Safe and vault servicers
+7299,Saw fitters
+7310,Concrete finishers
+7310,Drywall installers and finishers
+7310,Lathers
+7310,Plasterers
+7310,Tilesetters
+7311,Floor covering installers
+7311,Glaziers
+7311,Painters and decorators (except interior decorators)
+7311,Roofers
+7311,Shinglers
+7320,General building maintenance workers and building superintendents
+7320,Other repairers and servicers
+7320,Pest controllers and fumigators
+7320,Residential and commercial installers and servicers
+7330,Bus and streetcar drivers
+7330,Long-haul transport truck drivers
+7330,School bus drivers
+7330,Short-haul and local transport truck drivers
+7330,Subway train and light rail transit operators
+7331,Brakemen
+7331,Railway conductors
+7331,Railway locomotive engineers
+7331,Yard locomotive engineers
+7340,"Blasters - surface mining, quarrying and construction"
+7340,"Drillers - surface mining, quarrying and construction"
+7340,Heavy equipment operators
+7340,Printing press operators
+7410,Couriers and messengers
+7410,Letter carriers
+7410,Mail sorters
+7410,Mailroom clerks
+7420,Air transport ramp attendants
+7420,Automotive and heavy truck and equipment parts installers and servicers
+7420,"Deck crew, water transport"
+7420,Engine room crew - water transport
+7420,Gas maintenance workers
+7420,Public works maintenance equipment operators and related workers
+7420,Railway track maintenance workers
+7420,Railway yard  workers
+7420,Waterworks maintenance workers
+7510,Longshore workers
+7510,Material handlers (equipment operators)
+7510,Material handlers (manual)
+7511,Construction trades helpers and labourers
+7511,Other trades helpers and labourers
+7520,Chauffeurs
+7520,Delivery service drivers and door-to-door distributors
+7520,Taxi and limousine drivers
+7521,Boat operators
+7521,Cable ferry operators
+7521,Ferry terminal workers
+7521,Lock equipment operators
+7521,Motor transport labourers
+7521,Public works and maintenance labourers
+7521,Railway labourers
+8001,Managers in natural resources production and fishing
+8002,Managers in agriculture
+8002,Managers in aquaculture
+8002,Managers in horticulture
+8201,"Supervisors, logging and forestry"
+8202,"Contractors and supervisors, oil and gas drilling and services"
+8202,"Supervisors, mining and quarrying"
+8203,Agricultural service contractors
+8203,"Contractors and supervisors, landscaping, grounds maintenance and horticulture services"
+8203,Farm supervisors
+8310,Oil and gas well drillers and well servicers
+8310,"Oil and gas well loggers, testers and related workers"
+8310,Underground production and development miners
+8311,Logging machinery operators
+8312,Fishermen/women
+8312,Fishing masters and officers
+8410,Oil and gas well drilling workers
+8410,Oil and gas well service operators
+8410,Underground mine service and support workers
+8411,Chain saw and skidder operators
+8411,Silviculture and forestry workers
+8412,Fishing vessel deckhands
+8412,Specialized livestock workers
+8412,farm machinery operators
+8510,Aquaculture and marine harvest labourers
+8510,Harvesting labourers
+8510,Livestock labourers
+8510,Nursery and greenhouse labourers
+8510,Trappers and hunters
+8511,Mine labourers
+8511,"Oil and gas drilling, servicing and related labourers"
+8512,Landscaping and grounds maintenance labourers
+8512,Logging and forestry labourers
+9001,Electrical power distribution managers
+9001,Manufacturing managers
+9001,Natural gas and petroleum supply managers.
+9001,Waste systems managers
+9001,Water pollution control managers
+9001,Water supply managers
+9201,"Supervisors, food and beverage processing"
+9201,"Supervisors, forest products processing"
+9201,"Supervisors, mineral and metal processing"
+9201,"Supervisors, petroleum, gas and chemical processing and utilities"
+9201,"Supervisors, plastic and rubber products manufacturing"
+9201,"Supervisors, textile, fabric, fur and leather products processing and manufacturing"
+9202,"Supervisors, electronics and electrical products manufacturing"
+9202,"Supervisors, furniture and fixtures manufacturing"
+9202,"Supervisors, motor vehicle assembling"
+9202,"Supervisors, other mechanical and metal products manufacturing"
+9202,"Supervisors, other products manufacturing and assembly"
+9202,"Supervisors, other products manufacturing and assembly"
+9210,Liquid waste plant operators
+9210,Power engineers
+9210,Power systems operators
+9210,Water treatment plant operators
+9310,"Central control and process operators, mineral and metal processing"
+9310,"Central control and process operators, petroleum, gas and chemical processing"
+9310,"Pulping, papermaking and coating control operators"
+9320,Aircraft assemblers
+9320,Aircraft assembly inspectors
+9410,Clay products forming and finishing machine operators
+9410,Concrete products forming and finiching machine operators and workers
+9410,Forging machine operators
+9410,Foundry furnace operators
+9410,Glass cutters
+9410,Glass finishing machine operators
+9410,Glass forming machine operators
+9410,Glass process control operators
+9410,"Inspectors and testers, mineral and metal processing"
+9410,Machine operators of other metal products
+9410,"Machine operators, mineral and metal processing"
+9410,Machining tool operators
+9410,Metal casters
+9410,Metalworking machine operators
+9410,Mouldmakers and coremakers
+9410,Stone forming and finishing workers
+9411,"Assemblers, rubber products"
+9411,Calendering process operators - plastic processing
+9411,Chemical plant machine operators
+9411,Extruding process operators - plastic processing
+9411,Mixing machine operators - plastic processing
+9411,Moulding process operators - plastic processing
+9411,Rubber processing machine operators
+9411,Rubber products inspectors
+9412,Lumber graders
+9412,Other wood processing inspectors and graders
+9412,Other wood processing machine operators
+9412,Paper converting machine operators
+9412,"Pulp mill, papermaking and finishing machine operators"
+9412,Sawmill machine operators
+9412,Woodworking machine operators
+9413,Industrial sewing machine operators
+9413,"Inspectors and graders, textile, fabric, fur and leather products manufacturing"
+9413,"Textile fibre, yarn, hide and pelt processing machine operators"
+9413,"Textile, hide and pelt dyeing and finishing machine operators"
+9413,"Weavers, knitters and other fabric making occupations"
+9414,Fish and seafood plant cutters and cleaners
+9414,Fish and seafood plant machine operators
+9414,Industrial butchers
+9414,Industrial meat cutters
+9414,"Machine operators, food and beverage processing"
+9414,Poultry preparers
+9414,"Process control operators, food and beverage processing"
+9414,"Testers and graders, food and beverage processing"
+9415,Binding and finishing machine operators
+9415,Etchers and engravers
+9415,"Graphic arts camera operators, scanner operators, film strippers and assemblers"
+9415,Photographic and film processors
+9415,Plateless printing equipment operators
+9415,"Prepress technicians, platemakers, proofmakers, and pre-flight/file-preparation operators"
+9420,"Assemblers, electrical appliance, apparatus and equipment manufacturing"
+9420,"Assemblers, industrial electrical motors and transformers"
+9420,"Electrical fitters and wirers, industrial electrical motors and transformers"
+9420,Electronics assemblers and fabricators
+9420,Electronics inspectors and testers
+9420,Inspectors and testers in electrical apparatus manufacturing
+9420,"Inspectors and testers, electrical appliance,  apparatus and equipment manufacturing"
+9420,"Inspectors, industrial electrical motors and transformers"
+9420,Machine operators in electrical apparatus manufacturing
+9420,Mechanical assemblers
+9420,Mechanical inspectors
+9420,Motor vehicle assemblers
+9420,Motor vehicle inspectors and testers
+9421,Furniture and fixture assemblers
+9421,Furniture and fixture inspectors
+9421,Furniture finishers
+9421,Furniture refinishers
+9421,Industrial metal finishing process operators
+9421,Industrial painters and coaters
+9421,Other wood products assemblers
+9421,Other wood products inspectors
+9421,Plastic products assemblers and finishers
+9421,Plastic products inspectors
+9421,Product assemblers and finishers
+9421,Product inspectors
+9510,Fabric cutters
+9510,Fur cutters
+9510,Labourers in chemical products processing and utilities
+9510,Labourers in fish and seafood processing
+9510,Labourers in food and beverage processing
+9510,Labourers in metal fabrication
+9510,Labourers in mineral and metal processing
+9510,Labourers in rubber and plastic products manufacturing
+9510,Labourers in textile processing
+9510,"Labourers in wood, pulp and paper processing"
+9510,Leather cutters
+9510,"Other labourers in processing, manufacturing and utilities"
