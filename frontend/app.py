@@ -4,8 +4,9 @@ import streamlit as st
 from typing import Dict
 from openai import OpenAI
 import json
-
+import math
 import sys, os
+
 # add project root (folder that contains 'backend' and 'frontend') to sys.path
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
@@ -175,6 +176,63 @@ JSON format EXACTLY as follows:
 Use top 2 pathways from the top 3 to suggest the personalized upskilling path.
 """
 
+# ---------- UI helpers ----------
+def render_risk_result(result: dict):
+    # Header metric + progress bar
+    st.subheader("AI Risk Score")
+    colA, colB = st.columns([1, 3])
+    with colA:
+        st.metric(label="Overall Score (0–1)", value=f"{result['score']:.2f}")
+        st.caption(f"Band: **{result['band']}**")
+    with colB:
+        st.progress(min(max(result["score"], 0.0), 1.0))
+
+    # Components and Weights, side by side
+    st.markdown("#### Breakdown")
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("**Components (normalized 0–1)**")
+        for k, v in result["components"].items():
+            st.write(f"- **{k.title()}**: `{v:.2f}`")
+    with c2:
+        st.markdown("**Weights (sum = 1.0)**")
+        for k, v in result["weights"].items():
+            st.write(f"- **{k.title()}**: `{v:.2f}`")
+
+    # Inputs in an expander to avoid clutter
+    with st.expander("Details • Inputs used"):
+        st.write(
+            f"- **Province/Territory**: {result['inputs']['province']}\n"
+            f"- **Ethnicity**: {result['inputs']['ethnicity']}\n"
+            f"- **Job Title**: {result['inputs']['job']}"
+        )
+
+
+def render_pathways(payload: dict):
+    # Top 3 pathways as simple cards
+    st.subheader("Top Career Pathways")
+    top = payload.get("Top_3_Pathways", {})
+    for label in ["Pathway_1", "Pathway_2", "Pathway_3"]:
+        p = top.get(label, {})
+        with st.container(border=True):
+            st.markdown(f"**{label.replace('_', ' ')}**")
+            st.write(f"**Tools needed:** {p.get('Tools_needed', '—')}")
+            st.caption(p.get("Relevance", ""))
+
+    # Recommended upskilling path as a numbered plan
+    st.subheader("Recommended Upskilling Path")
+    rec = payload.get("Recommended_Upskilling_Path", {})
+    for step in ["Step_1", "Step_2"]:
+        s = rec.get(step, {})
+        with st.container(border=True):
+            st.markdown(f"**{step.replace('_', ' ')}: {s.get('Pathway', '—')}**")
+            st.write(f"**Tools needed:** {s.get('Tools_needed', '—')}")
+            st.caption(s.get("Reasoning", ""))
+
+    your_pick = rec.get("Your_Pick")
+    if your_pick:
+        st.info(f"**Your Pick:** {your_pick}")
+
 
 # ---------- UI ----------
 st.title("PathBuilder AI")
@@ -204,11 +262,10 @@ with tab1:
         sel_job  = jobs[job_disp.index(j_idx)]["job_id"]
         try:
             result = compute_score_local(sel_prov, sel_eth, sel_job)
-            st.subheader(f"AI Risk Score: {result['score']}")
-            st.caption(f"Band: **{result['band']}**")
-            st.json(result)
+            render_risk_result(result)
         except Exception as ex:
             st.error(str(ex))
+
 
 with tab2:
     st.write("Get tailored career pathways and upskilling steps based on your occupation’s skill profile.")
@@ -252,7 +309,8 @@ with tab2:
                     st.stop()
 
             st.subheader("AI Career Recommendation")
-            st.json(payload, expanded=True)
+            render_pathways(payload)
+
 
         except Exception as ex:
             st.error(str(ex))
