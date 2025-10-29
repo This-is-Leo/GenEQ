@@ -3,6 +3,7 @@ import sqlite3
 import streamlit as st
 from typing import Dict, Any
 from openai import OpenAI
+import json
 
 import sys, os
 # add project root (folder that contains 'backend' and 'frontend') to sys.path
