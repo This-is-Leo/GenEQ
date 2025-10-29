@@ -102,3 +102,38 @@ CREATE TABLE IF NOT EXISTS job_risk (
     risk REAL NOT NULL CHECK (risk >= 0 AND risk <= 1),
     FOREIGN KEY (job_id) REFERENCES jobs(job_id)
 );
+
+-- ------------------------------------------------------------
+-- Mentor Connect
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS volunteers (
+  volunteer_id   INTEGER PRIMARY KEY AUTOINCREMENT,
+  name           TEXT NOT NULL,
+  school         TEXT,
+  field          TEXT,     -- e.g., "Data Analytics", "Software", "Marketing"
+  email          TEXT,     -- contact email
+  bio            TEXT,     -- short intro
+  skills         TEXT      -- comma-separated keywords
+);
+
+CREATE TABLE IF NOT EXISTS volunteer_slots (
+  slot_id        INTEGER PRIMARY KEY AUTOINCREMENT,
+  volunteer_id   INTEGER NOT NULL,
+  start_utc      TEXT NOT NULL,  -- ISO8601 UTC
+  end_utc        TEXT NOT NULL,  -- ISO8601 UTC
+  is_booked      INTEGER NOT NULL DEFAULT 0,
+  FOREIGN KEY (volunteer_id) REFERENCES volunteers(volunteer_id)
+);
+
+CREATE TABLE IF NOT EXISTS bookings (
+  booking_id     INTEGER PRIMARY KEY AUTOINCREMENT,
+  volunteer_id   INTEGER NOT NULL,
+  slot_id        INTEGER NOT NULL,
+  user_name      TEXT NOT NULL,
+  user_email     TEXT NOT NULL,
+  topic          TEXT,
+  created_utc    TEXT NOT NULL DEFAULT (datetime('now')),
+  status         TEXT NOT NULL DEFAULT 'confirmed',
+  FOREIGN KEY (volunteer_id) REFERENCES volunteers(volunteer_id),
+  FOREIGN KEY (slot_id) REFERENCES volunteer_slots(slot_id)
+);
