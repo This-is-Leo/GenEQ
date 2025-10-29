@@ -17,11 +17,13 @@ Design choices:
 
 from __future__ import annotations
 
+import os, json
 import sqlite3
-from typing import Dict
+from typing import Dict, Any
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from openai import OpenAI
 
 from backend.compute import normalize_dimension, compute_job_risk
 from backend.config import DB_PATH
@@ -64,6 +66,72 @@ def qall(sql: str, params=()):
         conn.row_factory = sqlite3.Row
         cur = conn.execute(sql, params)
         return [dict(r) for r in cur.fetchall()]
+
+def get_job_features(job_id: str) -> dict[str, float]:
+    """
+    Reads the features_json for job_id from job_features_raw and returns a {feature: value} dict.
+    """
+    row = q1("SELECT features_json FROM job_features_raw WHERE job_id=?", (job_id,))
+    if not row or not row.get("features_json"):
+        raise HTTPException(status_code=404, detail=f"No features found for job_id={job_id}")
+    try:
+        return json.loads(row["features_json"])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Corrupt features_json for {job_id}: {e}")
+
+def top_bottom_20(features: dict[str, float]) -> tuple[dict[str, float], dict[str, float]]:
+    """
+    Mirrors your friend's logic: sort descending, take head(20) + tail(20).
+    (Equivalent to taking top 20 largest and bottom 20 smallest.)
+    """
+    # Sort by value (desc)
+    items = sorted(features.items(), key=lambda kv: kv[1], reverse=True)
+    top20 = dict(items[:20])
+    tail20 = dict(items[-20:])  # lowest 20
+    return top20, tail20
+
+# ------------- request/response models -------------
+class AdviceRequest(BaseModel):
+    job_id: str
+
+class AdviceResponse(BaseModel):
+    # The response is the JSON returned by the model; we keep it as an opaque dict
+    result: dict[str, Any]
+
+# ------------- OpenAI client -------------
+def get_openai_client() -> OpenAI:
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="OPENAI_API_KEY is not set")
+    return OpenAI(api_key=api_key)
+
+# ------------- system prompt (JSON only, mirrors your friend's file) -------------
+SYSTEM_PROMPT = """
+You are a professional career advisor specialized in AI impact on jobs.
+Create a detailed JSON recommendation based on Canadian occupation classification and AI skill impact scores.
+Maximize detail and reasoning. Ensure each pathway is AI-relevant.
+
+IMPORTANT:
+- Output ONLY valid JSON.
+- Do NOT include text, titles, or explanations outside the JSON.
+
+JSON format EXACTLY as follows:
+
+{
+  "Top_3_Pathways": {
+    "Pathway_1": {"Tools_needed": "", "Relevance": ""},
+    "Pathway_2": {"Tools_needed": "", "Relevance": ""},
+    "Pathway_3": {"Tools_needed": "", "Relevance": ""}
+  },
+  "Recommended_Upskilling_Path": {
+    "Step_1": {"Pathway": "", "Tools_needed": "", "Reasoning": ""},
+    "Step_2": {"Pathway": "", "Tools_needed": "", "Reasoning": ""},
+    "Your_Pick": ""
+  }
+}
+
+Use top 2 pathways from the top 3 to suggest the personalized upskilling path.
+"""
 
 
 # ------------------------------------------------------------
@@ -163,6 +231,50 @@ def list_jobs():
     # Return ALL titles mapped to job_id for a great search experience
     return qall("SELECT job_id, title FROM job_titles ORDER BY title")
 
+@app.post("/advice", response_model=AdviceResponse)
+def advice(req: AdviceRequest):
+    # 1) Get job display name (nice for the prompt)
+    job_row = q1("SELECT title FROM jobs WHERE job_id=?", (req.job_id,))
+    if not job_row:
+        raise HTTPException(status_code=404, detail=f"Unknown job_id={req.job_id}")
+    job_title = job_row["title"]
+
+    # 2) Get features -> top/bottom 20 (same logic as friend's code)
+    feats = get_job_features(req.job_id)
+    top20, tail20 = top_bottom_20(feats)
+
+    data_dict = {
+        "NOC_or_Title": job_title,
+        "Top_20_Skills": top20,
+        "Tail_20_Skills": tail20
+    }
+
+    # 3) Call OpenAI chat completions (same model & settings your friend used)
+    client = get_openai_client()
+    resp = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": f"Occupation data:\n{json.dumps(data_dict)}"},
+        ],
+        max_tokens=2000,
+        temperature=0,
+        top_p=1,
+    )
+
+    raw = resp.choices[0].message.content.strip().strip("`").strip()
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError:
+        # if model accidentally returns text around JSON, try to salvage
+        begin = raw.find("{")
+        end = raw.rfind("}")
+        if begin != -1 and end != -1 and end > begin:
+            payload = json.loads(raw[begin:end+1])
+        else:
+            raise HTTPException(status_code=500, detail=f"Failed to parse JSON from model: {raw[:300]}...")
+
+    return AdviceResponse(result=payload)
 
 # ------------------------------------------------------------
 # /score API
