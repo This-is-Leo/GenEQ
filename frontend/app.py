@@ -1,7 +1,8 @@
 # frontend/app.py  — Streamlit-only, no HTTP calls
 import sqlite3
 import streamlit as st
-from typing import Dict
+from typing import Dict, Any
+from openai import OpenAI
 
 import sys, os
 # add project root (folder that contains 'backend' and 'frontend') to sys.path
@@ -53,6 +54,13 @@ def load_options():
         ethnicities = qall(conn, "SELECT code, name FROM ethnicities ORDER BY name")
         jobs        = qall(conn, "SELECT job_id, title FROM job_titles ORDER BY title")
     return provinces, ethnicities, jobs
+
+def get_openai_client() -> OpenAI:
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        st.error("OPENAI_API_KEY is not set. Add it locally or in Streamlit secrets.")
+        st.stop()
+    return OpenAI(api_key=api_key)
 
 # ------------------------------------------------------------
 # Weight tapering by PCS share
@@ -124,6 +132,47 @@ def compute_score_local(province_code: str, ethnicity_code: str, job_id: str):
             "score": round(score_val, 2),
             "band": band(score_val),
         }
+    
+def get_job_features_local(job_id: str) -> dict[str, float]:
+    with get_conn() as conn:
+        row = q1(conn, "SELECT features_json FROM job_features_raw WHERE job_id=?", (job_id,))
+        if not row or not row.get("features_json"):
+            raise RuntimeError(f"No features found for job_id={job_id}")
+        return json.loads(row["features_json"])
+
+def top_bottom_20_local(features: dict[str, float]) -> tuple[dict[str, float], dict[str, float]]:
+    items = sorted(features.items(), key=lambda kv: kv[1], reverse=True)
+    top20 = dict(items[:20])
+    tail20 = dict(items[-20:])
+    return top20, tail20
+
+SYSTEM_PROMPT = """
+You are a professional career advisor specialized in AI impact on jobs.
+Create a detailed JSON recommendation based on Canadian occupation classification and AI skill impact scores.
+Maximize detail and reasoning. Ensure each pathway is AI-relevant.
+
+IMPORTANT:
+- Output ONLY valid JSON.
+- Do NOT include text, titles, or explanations outside the JSON.
+
+JSON format EXACTLY as follows:
+
+{
+  "Top_3_Pathways": {
+    "Pathway_1": {"Tools_needed": "", "Relevance": ""},
+    "Pathway_2": {"Tools_needed": "", "Relevance": ""},
+    "Pathway_3": {"Tools_needed": "", "Relevance": ""}
+  },
+  "Recommended_Upskilling_Path": {
+    "Step_1": {"Pathway": "", "Tools_needed": "", "Reasoning": ""},
+    "Step_2": {"Pathway": "", "Tools_needed": "", "Reasoning": ""},
+    "Your_Pick": ""
+  }
+}
+
+Use top 2 pathways from the top 3 to suggest the personalized upskilling path.
+"""
+
 
 # ---------- UI ----------
 st.title("PathBuilder AI")
@@ -144,15 +193,65 @@ with col2:
 
 j_idx = st.selectbox("Job Title", job_disp, index=0)
 
-if st.button("Calculate Risk"):
-    sel_prov = provinces[prov_disp.index(p_idx)]["code"]
-    sel_eth  = ethnicities[eth_disp.index(e_idx)]["code"]
-    sel_job  = jobs[job_disp.index(j_idx)]["job_id"]
+tab1, tab2 = st.tabs(["Risk Score", "Career Pathways (AI Advisor)"])
 
-    try:
-        result = compute_score_local(sel_prov, sel_eth, sel_job)
-        st.subheader(f"AI Risk Score: {result['score']}")
-        st.caption(f"Band: **{result['band']}**")
-        st.json(result)
-    except Exception as ex:
-        st.error(str(ex))
+with tab1:
+    if st.button("Calculate Risk"):
+        sel_prov = provinces[prov_disp.index(p_idx)]["code"]
+        sel_eth  = ethnicities[eth_disp.index(e_idx)]["code"]
+        sel_job  = jobs[job_disp.index(j_idx)]["job_id"]
+        try:
+            result = compute_score_local(sel_prov, sel_eth, sel_job)
+            st.subheader(f"AI Risk Score: {result['score']}")
+            st.caption(f"Band: **{result['band']}**")
+            st.json(result)
+        except Exception as ex:
+            st.error(str(ex))
+
+with tab2:
+    st.write("Get tailored career pathways and upskilling steps based on your occupation’s skill profile.")
+    if st.button("Generate Career Pathways"):
+        sel_job  = jobs[job_disp.index(j_idx)]["job_id"]
+        job_name = q1(get_conn(), "SELECT title FROM jobs WHERE job_id=?", (sel_job,))["title"]
+
+        try:
+            feats = get_job_features_local(sel_job)
+            top20, tail20 = top_bottom_20_local(feats)
+
+            data_dict = {
+                "NOC_or_Title": job_name,
+                "Top_20_Skills": top20,
+                "Tail_20_Skills": tail20
+            }
+
+            client = get_openai_client()
+            with st.spinner("Generating career pathways..."):
+                resp = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {"role": "user", "content": f"Occupation data:\n{json.dumps(data_dict)}"},
+                    ],
+                    max_tokens=2000,
+                    temperature=0,
+                    top_p=1,
+                )
+
+            raw = resp.choices[0].message.content.strip().strip("`").strip()
+            try:
+                payload = json.loads(raw)
+            except json.JSONDecodeError:
+                begin = raw.find("{"); end = raw.rfind("}")
+                if begin != -1 and end != -1 and end > begin:
+                    payload = json.loads(raw[begin:end+1])
+                else:
+                    st.error("Failed to parse JSON from model.")
+                    st.code(raw)
+                    st.stop()
+
+            st.subheader("AI Career Recommendation")
+            st.json(payload, expanded=True)
+
+        except Exception as ex:
+            st.error(str(ex))
+
