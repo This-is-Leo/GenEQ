@@ -4,8 +4,10 @@ import streamlit as st
 from typing import Dict
 from openai import OpenAI
 import json
-import math
 import sys, os
+import datetime as dt
+from contextlib import closing
+
 
 # add project root (folder that contains 'backend' and 'frontend') to sys.path
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -15,9 +17,55 @@ if PROJECT_ROOT not in sys.path:
 from backend.config import DB_PATH, W_PROVINCE, W_ETHNICITY, W_JOB
 from backend.compute import normalize_dimension, compute_job_risk
 
-st.set_page_config(page_title="PathBuilder AI — Risk Check (MVP)", layout="centered")
+st.set_page_config(page_title="PathBuilder AI", layout="centered")
 
 # ---------- DB helpers ----------
+def db():
+    # same DB the rest of the app uses
+    return sqlite3.connect("db/risk.db", check_same_thread=False)
+
+def list_volunteers(field_filter=None, q=None):
+    with closing(db()) as conn, closing(conn.cursor()) as cur:
+        sql = "SELECT volunteer_id, name, school, field, email, bio, skills FROM volunteers"
+        params = []
+        clauses = []
+        if field_filter and field_filter != "All":
+            clauses.append("field = ?")
+            params.append(field_filter)
+        if q:
+            clauses.append("(name LIKE ? OR skills LIKE ? OR bio LIKE ?)")
+            params.extend([f"%{q}%", f"%{q}%", f"%{q}%"])
+        if clauses:
+            sql += " WHERE " + " AND ".join(clauses)
+        sql += " ORDER BY name"
+        cur.execute(sql, params)
+        return cur.fetchall()
+
+def list_open_slots(volunteer_id):
+    with closing(db()) as conn, closing(conn.cursor()) as cur:
+        cur.execute("""SELECT slot_id, start_utc, end_utc
+                       FROM volunteer_slots
+                       WHERE volunteer_id=? AND is_booked=0
+                       ORDER BY start_utc""", (volunteer_id,))
+        return cur.fetchall()
+
+def create_booking(volunteer_id, slot_id, user_name, user_email, topic):
+    with closing(db()) as conn, closing(conn.cursor()) as cur:
+        # Reserve the slot in a tiny transaction
+        cur.execute("SELECT is_booked FROM volunteer_slots WHERE slot_id=? AND volunteer_id=?",
+                    (slot_id, volunteer_id))
+        row = cur.fetchone()
+        if not row:
+            return False, "Slot not found."
+        if row[0] == 1:
+            return False, "Sorry, that slot was just booked."
+
+        cur.execute("""INSERT INTO bookings(volunteer_id, slot_id, user_name, user_email, topic)
+                       VALUES (?,?,?,?,?)""", (volunteer_id, slot_id, user_name, user_email, topic))
+        cur.execute("UPDATE volunteer_slots SET is_booked=1 WHERE slot_id=?", (slot_id,))
+        conn.commit()
+        return True, "Session booked! You’ll receive a confirmation in-app."
+
 def get_conn():
     # Streamlit runs in a single process; keep connection short-lived
     conn = sqlite3.connect(DB_PATH)
@@ -253,7 +301,7 @@ with col2:
 
 j_idx = st.selectbox("Job Title", job_disp, index=0)
 
-tab1, tab2 = st.tabs(["Risk Score", "Career Pathways (AI Advisor)"])
+tab1, tab2, tab3 = st.tabs(["Risk Score", "Career Pathways (AI Advisor)", "Mentor Connect"])
 
 with tab1:
     if st.button("Calculate Risk"):
@@ -314,4 +362,53 @@ with tab2:
 
         except Exception as ex:
             st.error(str(ex))
+
+
+with tab3:
+    st.subheader("Find a student mentor and book a virtual session")
+
+    # Filters
+    colA, colB = st.columns([1, 1])
+    with colA:
+        field = st.selectbox("Area of study", ["All", "Data Analytics", "Software Engineering", "Marketing", "Finance"])
+    with colB:
+        q = st.text_input("Search (name/skills)")
+
+    rows = list_volunteers(field_filter=field, q=q)
+    if not rows:
+        st.info("No volunteers match your filters yet.")
+    else:
+        for v_id, name, school, vfield, email, bio, skills in rows:
+            with st.expander(f"{name} — {vfield} ({school})"):
+                st.write(bio or "—")
+                if skills:
+                    st.caption(f"**Skills:** {skills}")
+
+                open_slots = list_open_slots(v_id)
+                if not open_slots:
+                    st.warning("No open slots at the moment.")
+                    continue
+
+                # slot picker
+                slot_labels = [f"{dt.datetime.fromisoformat(s).strftime('%b %d, %H:%M')} UTC"
+                               for _, s, _ in open_slots]
+                slot_map = {lbl: sid for (sid, s, _), lbl in zip(open_slots, slot_labels)}
+                choose = st.selectbox("Pick a time:", slot_labels, key=f"slot_{v_id}")
+
+                # booking form
+                with st.form(f"book_{v_id}"):
+                    u_name  = st.text_input("Your name")
+                    u_email = st.text_input("Your email")
+                    topic   = st.text_area("What do you want help with? (optional)")
+                    submit  = st.form_submit_button("Book this session")
+                    if submit:
+                        if not u_name or not u_email:
+                            st.error("Name and email are required.")
+                        else:
+                            ok, msg = create_booking(v_id, slot_map[choose], u_name, u_email, topic)
+                            if ok:
+                                st.success(msg)
+                            else:
+                                st.error(msg)
+
 

@@ -108,6 +108,34 @@ def load_job_features(conn, features_path):
         conn.execute("DELETE FROM job_features_raw")
         features_json.to_sql("job_features_raw", conn, if_exists="append", index=False)
 
+def seed_volunteers(conn):
+    cur = conn.cursor()
+    # Only seed if empty
+    cur.execute("SELECT COUNT(*) FROM volunteers")
+    if cur.fetchone()[0] > 0:
+        return
+
+    cur.execute("""INSERT INTO volunteers(name, school, field, email, bio, skills)
+                   VALUES (?,?,?,?,?,?)""",
+                ("Aisha Khan", "Humber", "Data Analytics", "aisha@example.com",
+                 "Final-year analytics student; loves SQL & dashboards.",
+                 "python,sql,tableau,excel"))
+    cur.execute("""INSERT INTO volunteers(name, school, field, email, bio, skills)
+                   VALUES (?,?,?,?,?,?)""",
+                ("Leo Park", "UofT", "Software Engineering", "leo@example.com",
+                 "Backend + cloud; happy to help with career pivots.",
+                 "python,fastapi,aws,linux"))
+
+    # Create 6 future 30-min slots for each volunteer (UTC)
+    import datetime as dt
+    base = dt.datetime.utcnow() + dt.timedelta(days=1)
+    for vid in (1, 2):
+        for i in range(6):
+            start = base + dt.timedelta(days=i//2, hours=(i%2)*1)  # 2/day
+            end   = start + dt.timedelta(minutes=30)
+            cur.execute("""INSERT INTO volunteer_slots(volunteer_id, start_utc, end_utc)
+                           VALUES (?,?,?)""", (vid, start.isoformat(), end.isoformat()))
+    conn.commit()
 
 
 def main():
@@ -161,6 +189,12 @@ def main():
     rub_df[["name", "substitution_index", "complementarity_index"]].to_sql(
         "ability_skill_rubric_raw", conn, if_exists="append", index=False
     )
+    
+    # ----------------------------------------------------
+    # Step 7 — Seed volunteers and slots
+    # ----------------------------------------------------
+    print("Seeding volunteers and slots...")
+    seed_volunteers(conn)
 
     print("Database initialization complete.")
     conn.close()
