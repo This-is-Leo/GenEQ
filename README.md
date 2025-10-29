@@ -1,77 +1,61 @@
-# PathBuilder AI – Equitable Workforce Transition Tool
+# 🗺️ PathBuilder AI: Equitable Workforce Transition Tool
 
-PathBuilder AI is a prototype decision-support tool that helps workers assess their risk of AI-driven job disruption and discover equitable upskilling pathways. It is designed with an equity-first lens to ensure vulnerable workers are not left behind in the AI economy.
+PathBuilder AI is a workforce navigation prototype that helps users assess their AI job disruption risk, discover personalized upskilling pathways, and connect with volunteer mentors in their field. Built with an equity-first design, it supports workers who face structural barriers in the AI economy.
 
-## Quickstart
+### 🔗 Live Demo
 https://gen-eq-pathbuilder.streamlit.app/
 
 ## 🚧 Problem Statement
 
-Artificial Intelligence is transforming the labour market faster than workers and institutions can keep up. The risks are not equally distributed:
+Artificial Intelligence is rapidly transforming the labour market but not everyone is impacted equally:
 - Routine and low-wage jobs face high automation risk
 - These jobs are disproportionately held by women, newcomers, racialized groups, and non-degree workers
-- Current upskilling systems assume equal access to time, cost, and training, which is not realistic
-- Without intervention, AI will widen inequality and restrict economic mobility
+- Traditional career guidance assumes equal access to time, money, and training
+- Without intervention, AI will widen income inequality and workforce exclusion
 
-Goal: Build a scalable, ethical solution that supports equitable career transitions, wage resilience, and inclusive participation in the AI economy.
+Goal: Build a scalable, ethical, and practical transition tool that empowers workers, especially those in vulnerable jobs to prepare for the AI economy.
 
-## ⚙️ Solution Prototype
+## ⚙️ Current Prototype Features
 
 PathBuilder AI empowers workers with personalized and accessible career transitions:
 
-Feature	Description
-- AI Risk Assessment: Measures automation risk based on occupational skills & abilities
-- Transferable Pathways: Suggests safer, future-proof career options
-- Upskilling Recommendations: Provides routes using free/low-cost programs & micro-credentials
-- Equity Lens: Designed intentionally for accessibility and inclusion
-- Transparent Design: Explainable logic using open data + fair scoring
+Feature | Description 
+| --- | --- |
+AI Risk Score | Calculates personalized AI risk based on job title + province + ethnicity using labour exposure data sourced from Statistics Canada and a skill vulnerability model
+AI Upskilling Advisor (LLM-powered) | Suggests 3 personalized career pathways + skill/tool suggestions + a recommended upskilling plan using AI
+Mentor Connect (Community Support Layer) | Users can book a 1:1 session with volunteer mentors based on industry, expertise, and availability
 
 ## 🏛️ Architecture Overview
-User Input -> Risk Scoring Model (Skills + AI Substitution Index) -> Transferable Skills Engine -> Pathway Output (LLM – Fine-tuned)
 
-### 1. Risk Scoring Model
+### How Risk Score Works
 
-Risk is computed using three weighted factors:
-Component | Source Data | Purpose
-|---|---|---|
-Province Risk | AI exposure levels by Canadian province | Geographic vulnerability
-Ethnicity Risk | Exposure risk by visible minority groups | Equity context
-Job Risk | Based on skills & abilities mapped to AI substitution risk | Automation risk from skills
+Risk is calculated using 3 components:
 
-We use:
-- SkillsAbilitiesMerged.csv (900 occupations × 82 skill dimensions)
-- AbilitySkillRubric.csv (AI substitution vs complementarity index)
-- Custom Category Mapping
-    - Routine → high AI risk
-    - Physical / Creative / Social → reduced AI risk
-- Weighted formula reduces bias by factoring human-centric abilities.
+Component |	Purpose
+|---|---|
+Province Risk |	AI exposure by geography (StatsCan labour trends)
+Ethnicity Risk | Exposure risk by visible minority group (equity lens)
+Job Risk | Based on skill vulnerability to AI substitution
 
-## Tech Stack
-- Language: Python 3.10+
-- Frontend: Streamlit
-- Database: SQLite
+- Each job is scored using 82 skills and abilities
+- Routine skills increase risk
+- Physical, social, and creative abilities protect against AI risk
+- All scores normalized 0–1 scale
 
-## Run Locally
-1. Clone and Install
-```
-git clone https://github.com/yourusername/geneq.git
-cd geneq
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-```
+### Data Behind AI Risk Model
+Dataset | Purpose
+|---|---|
+SkillsAbilitiesMerged.csv | 900+ occupations × 82 skills
+AbilitySkillRubric.csv | AI Substitution & Complementarity Index
+Custom Category Map | Clusters skills into Routine/Physical/Creative/Social
 
-2. Initialize the Database
-```
-python init_db.py
-```
 
-3. Run the App
-```
-streamlit run frontend/app.py
-```
+## 🎯 Next Steps
 
-## Next Steps
-1. Transferable skills engine	
-2. Personalized learning pathways	
-3. AI assist via local LLM or GPT API	
+- Build volunteer signup portal (currently mentors are seed data)
+- Add Admin Dashboard for:
+    - Approving mentors
+    - Managing bookings and spam prevention
+- Add database management and security features to protect user data
+- Build local LLM to avoid vendor lock-in
+- Employer partnership integration
