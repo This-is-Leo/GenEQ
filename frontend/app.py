@@ -1,7 +1,7 @@
 # frontend/app.py  — Streamlit-only, no HTTP calls
 import sqlite3
 import streamlit as st
-from typing import Dict, Any
+from typing import Dict
 from openai import OpenAI
 import json
 
@@ -57,11 +57,12 @@ def load_options():
     return provinces, ethnicities, jobs
 
 def get_openai_client() -> OpenAI:
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        st.error("OPENAI_API_KEY is not set. Add it locally or in Streamlit secrets.")
+    # Read from Streamlit Secrets in the cloud
+    OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY")
+    if not OPENAI_API_KEY:
+        st.error("OPENAI_API_KEY is missing. Add it in Settings → Secrets.")
         st.stop()
-    return OpenAI(api_key=api_key)
+    return OpenAI(api_key=OPENAI_API_KEY)
 
 # ------------------------------------------------------------
 # Weight tapering by PCS share
