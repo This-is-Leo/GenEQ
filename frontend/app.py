@@ -155,9 +155,6 @@ def clamp(value: float, low: float = 0.0, high: float = 1.0) -> float:
     """Restrict a numeric value to stay within [low, high]."""
     return max(low, min(high, float(value)))
 
-# Map UI string to multiplier (keep your current labels)
-EXP_MULT = {"Entry (0-2 years)": 1.00, "Mid (3-7 years)": 0.80, "Senior (8+ years)": 0.60}
-
 def compute_score_local(province_code: str, ethnicity_code: str, job_id: str, experience_label: str):
     ensure_ready()
     with get_conn() as conn:
