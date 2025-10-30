@@ -117,6 +117,15 @@ def load_options():
         jobs = qall(conn, "SELECT job_id, title FROM job_titles ORDER BY title")
     return provinces, ethnicities, jobs
 
+@st.cache_data(ttl=300)
+def fetch_teer_weight(job_id: str) -> float:
+    import sqlite3
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        row = conn.execute("SELECT COALESCE(teer_weight, 0) FROM jobs WHERE job_id = ?", (job_id,)).fetchone()
+        return float(row[0]) if row else 0.0
+    finally:
+        conn.close()
 
 def get_openai_client() -> OpenAI:
     # Read from Streamlit Secrets in the cloud
@@ -149,14 +158,18 @@ def tapered_weights(pcs_share: float) -> Dict[str, float]:
 
 
 def band(score: float) -> str:
-    if score < 0.33:
+    if score < 0.35:
         return "Low"
-    if score < 0.55:
+    if score < 0.60:
         return "Medium"
     return "High"
 
+# Utility: clamp a number to a range [low, high]
+def clamp(value: float, low: float = 0.0, high: float = 1.0) -> float:
+    """Restrict a numeric value to stay within [low, high]."""
+    return max(low, min(high, float(value)))
 
-def compute_score_local(province_code: str, ethnicity_code: str, job_id: str):
+def compute_score_local(province_code: str, ethnicity_code: str, job_id: str, experience_label: str):
     ensure_ready()
     with get_conn() as conn:
         pr = q1(conn, "SELECT risk FROM province_risk WHERE province_code=?", (province_code,))
@@ -170,37 +183,65 @@ def compute_score_local(province_code: str, ethnicity_code: str, job_id: str):
             if not jr: missing.append("job_risk")
             raise RuntimeError(f"Missing components: {', '.join(missing)}")
 
-        components = {
-            "province": float(pr["risk"]),
-            "ethnicity": float(er["risk"]),
-            "job": float(jr["risk"]),
+        # Base components (0..1)
+        province_risk = float(pr["risk"])
+        ethnicity_risk = float(er["risk"])
+        job_risk = float(jr["risk"])
+
+        # === EXPERIENCE COMPONENT (0..1; HIGHER = MORE RISK) ===
+        # Pull the CSV-provided replaceability weight stored in `jobs.teer_weight`
+        row = q1(conn, "SELECT teer_weight FROM jobs WHERE job_id=?", (job_id,))
+        teer_weight = float(row["teer_weight"]) if row and row["teer_weight"] is not None else 0.0
+        teer_weight = clamp(teer_weight, 0.0, 1.0)
+
+        # Support both hyphen and en-dash labels from the UI
+        label_norm = experience_label.replace("–", "-")
+        exp_mult_map = {
+            "Entry (0-2 years)": 1.00,
+            "Mid (3-7 years)":   0.80,
+            "Senior (8+ years)": 0.60
+        }
+        exp_mult = exp_mult_map.get(label_norm, 1.00)
+
+        # Risk rises with TEER replaceability and falls with experience seniority
+        experience_component = clamp(teer_weight * exp_mult, 0.0, 1.0)
+
+        # === WEIGHTS (sum = 1.0) ===
+        WEIGHTS = {
+            "job":        0.60,
+            "province":   0.15,
+            "ethnicity":  0.10,
+            "experience": 0.15,
         }
 
-        # fetch pcs_share and taper weights
-        jp = q1(conn, "SELECT pcs_share FROM job_profile WHERE job_id=?", (job_id,))
-        if not jp:
-            raise RuntimeError("Missing component: job_profile (pcs_share)")
-        pcs_share = float(jp["pcs_share"])
-        weights = tapered_weights(pcs_share)
+        # Composite: ADD all components; each is already a 0..1 "more = higher risk"
+        composite = (
+            WEIGHTS["job"]        * job_risk +
+            WEIGHTS["province"]   * province_risk +
+            WEIGHTS["ethnicity"]  * ethnicity_risk +
+            WEIGHTS["experience"] * experience_component
+        )
+        final_score = clamp(composite, 0.0, 1.0)
 
-        score_val = sum(components[k] * weights[k] for k in components)
-        score_val = max(0.0, min(1.0, score_val))
-
-        # Pretty rounding for display
         return {
             "inputs": {
-                "province": q1(conn, "SELECT name FROM provinces WHERE code=?", (province_code,))["name"],
-                "ethnicity": q1(conn, "SELECT name FROM ethnicities WHERE code=?", (ethnicity_code,))["name"],
-                "job": q1(conn, "SELECT title FROM job_titles WHERE job_id=? ORDER BY title LIMIT 1", (job_id,))[
-                    "title"],
+                "province":   q1(conn, "SELECT name FROM provinces WHERE code=?", (province_code,))["name"],
+                "ethnicity":  q1(conn, "SELECT name FROM ethnicities WHERE code=?", (ethnicity_code,))["name"],
+                "job":        q1(conn, "SELECT title FROM job_titles WHERE job_id=? ORDER BY title LIMIT 1", (job_id,))["title"],
+                "experience": experience_label,
             },
-            "components": {k: round(v, 2) for k, v in components.items()},
-            "weights": {k: round(v, 2) for k, v in weights.items()},
-            "score": round(score_val, 2),
-            "band": band(score_val),
+            "components": {
+                "job":        round(job_risk, 2),
+                "province":   round(province_risk, 2),
+                "ethnicity":  round(ethnicity_risk, 2),
+                "experience": round(experience_component, 2),
+            },
+            "weights": WEIGHTS,
+            "score": round(final_score, 2),
+            "band": band(final_score),
         }
 
-
+    
 def get_job_features_local(job_id: str) -> dict[str, float]:
     with get_conn() as conn:
         row = q1(conn, "SELECT features_json FROM job_features_raw WHERE job_id=?", (job_id,))
@@ -248,7 +289,7 @@ def render_risk_result(result: dict):
     st.subheader("AI Risk Score")
     colA, colB = st.columns([1, 3])
     with colA:
-        st.metric(label="Overall Score (0–1)", value=f"{result['score']:.2f}")
+        st.metric(label="Overall Score (0-1)", value=f"{result['score']:.2f}")
         st.caption(f"Band: **{result['band']}**")
     with colB:
         st.progress(min(max(result["score"], 0.0), 1.0))
@@ -257,7 +298,7 @@ def render_risk_result(result: dict):
     st.markdown("#### Breakdown")
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown("**Components (normalized 0–1)**")
+        st.markdown("**Components (normalized 0-1)**")
         for k, v in result["components"].items():
             st.write(f"- **{k.title()}**: `{v:.2f}`")
     with c2:
@@ -270,7 +311,8 @@ def render_risk_result(result: dict):
         st.write(
             f"- **Province/Territory**: {result['inputs']['province']}\n"
             f"- **Ethnicity**: {result['inputs']['ethnicity']}\n"
-            f"- **Job Title**: {result['inputs']['job']}"
+            f"- **Job Title**: {result['inputs']['job']}\n"
+            f"- **Experience**: {result['inputs'].get('experience', '-')}"
         )
 
 
@@ -308,8 +350,9 @@ provinces, ethnicities, jobs = load_options()
 
 # Nice display labels for dropdowns
 prov_disp = [f"{p['name']}" for p in provinces]
-eth_disp = [f"{e['name']}" for e in ethnicities]
-job_disp = [j["title"] for j in jobs]
+eth_disp  = [f"{e['name']}" for e in ethnicities]
+job_disp  = [j["title"] for j in jobs]
+exp_disp = ["Entry (0-2 years)", "Mid (3-7 years)", "Senior (8+ years)"]
 
 col1, col2 = st.columns(2)
 with col1:
@@ -318,16 +361,19 @@ with col2:
     e_idx = st.selectbox("Ethnicity (Statistics Canada categories)", eth_disp, index=0)
 
 j_idx = st.selectbox("Job Title", job_disp, index=0)
+exp_idx  = st.selectbox("Experience level", exp_disp, index=0)
 
 tab1, tab2, tab3 = st.tabs(["Risk Score", "Career Pathways (AI Advisor)", "Mentor Connect"])
 
 with tab1:
     if st.button("Calculate Risk"):
         sel_prov = provinces[prov_disp.index(p_idx)]["code"]
-        sel_eth = ethnicities[eth_disp.index(e_idx)]["code"]
-        sel_job = jobs[job_disp.index(j_idx)]["job_id"]
+        sel_eth  = ethnicities[eth_disp.index(e_idx)]["code"]
+        sel_job  = jobs[job_disp.index(j_idx)]["job_id"]
+        sel_exp  = exp_idx  
+
         try:
-            result = compute_score_local(sel_prov, sel_eth, sel_job)
+            result = compute_score_local(sel_prov, sel_eth, sel_job, sel_exp)
             render_risk_result(result)
         except Exception as ex:
             st.error(str(ex))

@@ -36,25 +36,26 @@ def load_jobs_and_titles(conn, noc_path):
     df = pd.read_csv(noc_path, dtype=str, keep_default_na=False)
 
     # Standardize column names
-    df = df.rename(columns={"NOC_CODE": "job_id", "OASIS_LABEL": "title"})
+    df = df.rename(columns={"NOC_CODE": "job_id", "OASIS_LABEL": "title", "TEER": "teer", "Weight": "teer_weight"})
 
-    # Clean whitespace safely on Series (use .str.strip)
+    # Clean
     df["job_id"] = df["job_id"].fillna("").astype(str).str.strip().apply(normalize_job_id)
     df["title"]  = df["title"].fillna("").astype(str).str.strip()
+    df["teer"] = pd.to_numeric(df.get("teer", 0), errors="coerce").fillna(0.0)
+    df["teer_weight"] = pd.to_numeric(df.get("teer_weight", 0), errors="coerce").fillna(0.0)
 
     # Drop empty IDs
     df = df[df["job_id"] != ""]
 
     # jobs: one canonical row per job_id (keep first title)
-    jobs_df = df.drop_duplicates(subset=["job_id"], keep="first")[["job_id", "title"]]
+    jobs_df = df.drop_duplicates(subset=["job_id"], keep="first")[["job_id", "title", "teer", "teer_weight"]]
 
     # job_titles: keep ALL (job_id, title) pairs for UI search
-    titles_df = df.drop_duplicates(subset=["job_id", "title"], keep="first")[["job_id", "title"]]
+    titles_df = df.drop_duplicates(subset=["job_id","title"], keep="first")[["job_id", "title"]]
 
     with conn:
         conn.execute("DELETE FROM jobs")
         jobs_df.to_sql("jobs", conn, if_exists="append", index=False)
-
         conn.execute("DELETE FROM job_titles")
         titles_df.to_sql("job_titles", conn, if_exists="append", index=False)
 
