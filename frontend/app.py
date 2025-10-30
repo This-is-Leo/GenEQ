@@ -136,7 +136,7 @@ def tapered_weights(pcs_share: float) -> Dict[str, float]:
 def band(score: float) -> str:
     if score < 0.33:
         return "Low"
-    if score < 0.66:
+    if score < 0.55:
         return "Medium"
     return "High"
 
