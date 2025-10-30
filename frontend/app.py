@@ -140,8 +140,13 @@ def band(score: float) -> str:
         return "Medium"
     return "High"
 
+# Utility: clamp a number to a range [low, high]
+def clamp(value: float, low: float = 0.0, high: float = 1.0) -> float:
+    """Restrict a numeric value to stay within [low, high]."""
+    return max(low, min(high, float(value)))
 
-def compute_score_local(province_code: str, ethnicity_code: str, job_id: str):
+
+def compute_score_local(province_code: str, ethnicity_code: str, job_id: str, experience_label: str):
     ensure_ready()
     with get_conn() as conn:
         pr = q1(conn, "SELECT risk FROM province_risk WHERE province_code=?", (province_code,))
@@ -155,34 +160,56 @@ def compute_score_local(province_code: str, ethnicity_code: str, job_id: str):
             if not jr: missing.append("job_risk")
             raise RuntimeError(f"Missing components: {', '.join(missing)}")
 
-        components = {
-            "province": float(pr["risk"]),
-            "ethnicity": float(er["risk"]),
-            "job": float(jr["risk"]),
+        # Base component scores
+        province_risk = float(pr["risk"])
+        ethnicity_risk = float(er["risk"])
+        job_risk = float(jr["risk"])
+
+        # === EXPERIENCE COMPONENT ===
+        teer_val = q1(conn, "SELECT teer FROM jobs WHERE job_id=?", (job_id,))
+        teer_weight = float(teer_val["teer"]) if teer_val and teer_val["teer"] is not None else 0.5
+        exp_mult_map = {"Entry (0-2 years)": 1.00, "Mid (3-7 years)": 0.80, "Senior (8+ years)": 0.60}
+        exp_mult = exp_mult_map.get(experience_label, 1.00)
+
+        experience_impact = clamp(teer_weight * exp_mult, 0.0, 1.0)
+        experience_component = 1 - experience_impact  # higher experience → lower added risk
+
+        # === WEIGHTS (balanced composite) ===
+        WEIGHTS = {
+            "job": 0.60,
+            "province": 0.25,
+            "ethnicity": 0.10,
+            "experience": 0.05,
         }
 
-        # fetch pcs_share and taper weights
-        jp = q1(conn, "SELECT pcs_share FROM job_profile WHERE job_id=?", (job_id,))
-        if not jp:
-            raise RuntimeError("Missing component: job_profile (pcs_share)")
-        pcs_share = float(jp["pcs_share"])
-        weights = tapered_weights(pcs_share)
+        # Composite score
+        composite = (
+            WEIGHTS["job"] * job_risk
+            + WEIGHTS["province"] * province_risk
+            + WEIGHTS["ethnicity"] * ethnicity_risk
+            + WEIGHTS["experience"] * experience_component
+        )
 
-        score_val = sum(components[k] * weights[k] for k in components)
-        score_val = max(0.0, min(1.0, score_val))
+        final_score = clamp(composite, 0.0, 1.0)
 
-        # Pretty rounding for display
         return {
             "inputs": {
                 "province": q1(conn, "SELECT name FROM provinces WHERE code=?", (province_code,))["name"],
                 "ethnicity": q1(conn, "SELECT name FROM ethnicities WHERE code=?", (ethnicity_code,))["name"],
                 "job": q1(conn, "SELECT title FROM job_titles WHERE job_id=? ORDER BY title LIMIT 1", (job_id,))["title"],
+                "experience": experience_label,  # NEW
             },
-            "components": {k: round(v, 2) for k, v in components.items()},
-            "weights": {k: round(v, 2) for k, v in weights.items()},
-            "score": round(score_val, 2),
-            "band": band(score_val),
+            "components": {
+                "job": round(job_risk, 2),
+                "province": round(province_risk, 2),
+                "ethnicity": round(ethnicity_risk, 2),
+                "experience": round(experience_component, 2),
+            },
+            "weights": WEIGHTS,
+            "score": round(final_score, 2),
+            "band": band(final_score),
         }
+
     
 def get_job_features_local(job_id: str) -> dict[str, float]:
     with get_conn() as conn:
@@ -252,7 +279,8 @@ def render_risk_result(result: dict):
         st.write(
             f"- **Province/Territory**: {result['inputs']['province']}\n"
             f"- **Ethnicity**: {result['inputs']['ethnicity']}\n"
-            f"- **Job Title**: {result['inputs']['job']}"
+            f"- **Job Title**: {result['inputs']['job']}\n"
+            f"- **Experience**: {result['inputs'].get('experience', '-')}"
         )
 
 
@@ -292,6 +320,7 @@ provinces, ethnicities, jobs = load_options()
 prov_disp = [f"{p['name']}" for p in provinces]
 eth_disp  = [f"{e['name']}" for e in ethnicities]
 job_disp  = [j["title"] for j in jobs]
+exp_disp = ["Entry (0–2 years)", "Mid (3–7 years)", "Senior (8+ years)"]
 
 col1, col2 = st.columns(2)
 with col1:
@@ -300,6 +329,7 @@ with col2:
     e_idx = st.selectbox("Ethnicity (Statistics Canada categories)", eth_disp, index=0)
 
 j_idx = st.selectbox("Job Title", job_disp, index=0)
+exp_idx  = st.selectbox("Experience level", exp_disp, index=0)
 
 tab1, tab2, tab3 = st.tabs(["Risk Score", "Career Pathways (AI Advisor)", "Mentor Connect"])
 
@@ -308,8 +338,9 @@ with tab1:
         sel_prov = provinces[prov_disp.index(p_idx)]["code"]
         sel_eth  = ethnicities[eth_disp.index(e_idx)]["code"]
         sel_job  = jobs[job_disp.index(j_idx)]["job_id"]
+        sel_exp  = exp_disp[exp_idx]
         try:
-            result = compute_score_local(sel_prov, sel_eth, sel_job)
+            result = compute_score_local(sel_prov, sel_eth, sel_job, sel_exp)
             render_risk_result(result)
         except Exception as ex:
             st.error(str(ex))

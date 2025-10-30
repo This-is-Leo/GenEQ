@@ -49,7 +49,8 @@ CREATE TABLE IF NOT EXISTS ethnicity_risk (
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS jobs (
     job_id TEXT PRIMARY KEY,          -- NOC_CODE
-    title TEXT NOT NULL               -- OASIS_LABEL
+    title TEXT NOT NULL,              -- OASIS_LABEL
+    teer     INTEGER                  -- TEER 
 );
 
 -- ------------------------------------------------------------
