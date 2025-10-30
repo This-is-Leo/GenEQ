@@ -351,12 +351,12 @@ with tab2:
             client = get_openai_client()
             with st.spinner("Generating career pathways..."):
                 resp = client.chat.completions.create(
-                    model="gpt-5",
+                    model="gpt-4o-mini",
                     messages=[
                         {"role": "system", "content": SYSTEM_PROMPT},
                         {"role": "user", "content": f"Occupation data:\n{json.dumps(data_dict)}"},
                     ],
-                    max_completion_tokens=2500,
+                    max_tokens=2500,
                     temperature=0.1,
                     top_p=1,
                 )
