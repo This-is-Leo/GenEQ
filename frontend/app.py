@@ -356,7 +356,7 @@ with tab2:
                         {"role": "system", "content": SYSTEM_PROMPT},
                         {"role": "user", "content": f"Occupation data:\n{json.dumps(data_dict)}"},
                     ],
-                    max_tokens=2500,
+                    max_completion_tokens=2500,
                     temperature=0.1,
                     top_p=1,
                 )
