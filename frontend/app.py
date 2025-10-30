@@ -338,7 +338,8 @@ with tab1:
         sel_prov = provinces[prov_disp.index(p_idx)]["code"]
         sel_eth  = ethnicities[eth_disp.index(e_idx)]["code"]
         sel_job  = jobs[job_disp.index(j_idx)]["job_id"]
-        sel_exp  = exp_disp[exp_idx]
+        sel_exp  = exp_idx  
+
         try:
             result = compute_score_local(sel_prov, sel_eth, sel_job, sel_exp)
             render_risk_result(result)
