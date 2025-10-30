@@ -21,7 +21,7 @@ PathBuilder AI empowers workers with personalized and accessible career transiti
 
 Feature | Description 
 | --- | --- |
-AI Risk Score | Calculates personalized AI risk based on job title + province + ethnicity using labour exposure data sourced from Statistics Canada and a skill vulnerability model
+AI Risk Score | Calculates personalized AI risk based on job title + province + ethnicity + experience level using labour exposure data sourced from Statistics Canada and a skill vulnerability model
 AI Upskilling Advisor (LLM-powered) | Suggests 3 personalized career pathways + skill/tool suggestions + a recommended upskilling plan using AI
 Mentor Connect (Community Support Layer) | Users can book a 1:1 session with volunteer mentors based on industry, expertise, and availability
 
@@ -29,25 +29,28 @@ Mentor Connect (Community Support Layer) | Users can book a 1:1 session with vol
 
 ### How Risk Score Works
 
-Risk is calculated using 3 components:
+Risk is calculated using 4 components:
 
 Component |	Purpose
 |---|---|
 Province Risk |	AI exposure by geography (StatsCan labour trends)
 Ethnicity Risk | Exposure risk by visible minority group (equity lens)
 Job Risk | Based on skill vulnerability to AI substitution
+Experience Risk | Based on TEER category
 
 - Each job is scored using 82 skills and abilities
 - Routine skills increase risk
 - Physical, social, and creative abilities protect against AI risk
+- Higher experience protects against AI risk
 - All scores normalized 0–1 scale
 
 ### Data Behind AI Risk Model
 Dataset | Purpose
 |---|---|
-SkillsAbilitiesMerged.csv | 900+ occupations × 82 skills
+SkillsAbilitiesMerged.csv | 900+ occupations x 82 skills
 AbilitySkillRubric.csv | AI Substitution & Complementarity Index
 Custom Category Map | Clusters skills into Routine/Physical/Creative/Social
+NOC_Code.csv | 900+ occupations x TEER category weights
 
 
 ## 🎯 Next Steps
