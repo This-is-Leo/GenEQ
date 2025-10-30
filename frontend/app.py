@@ -134,9 +134,9 @@ def tapered_weights(pcs_share: float) -> Dict[str, float]:
     }
 
 def band(score: float) -> str:
-    if score < 0.33:
+    if score < 0.35:
         return "Low"
-    if score < 0.55:
+    if score < 0.65:
         return "Medium"
     return "High"
 
@@ -168,6 +168,7 @@ def compute_score_local(province_code: str, ethnicity_code: str, job_id: str, ex
         # === EXPERIENCE COMPONENT ===
         teer_val = q1(conn, "SELECT teer FROM jobs WHERE job_id=?", (job_id,))
         teer_weight = float(teer_val["teer"]) if teer_val and teer_val["teer"] is not None else 0.5
+        teer_weight = clamp(teer_weight, 0.0, 1.0)
         exp_mult_map = {"Entry (0-2 years)": 1.00, "Mid (3-7 years)": 0.80, "Senior (8+ years)": 0.60}
         exp_mult = exp_mult_map.get(experience_label, 1.00)
 
@@ -177,9 +178,9 @@ def compute_score_local(province_code: str, ethnicity_code: str, job_id: str, ex
         # === WEIGHTS (balanced composite) ===
         WEIGHTS = {
             "job": 0.60,
-            "province": 0.25,
+            "province": 0.15,
             "ethnicity": 0.10,
-            "experience": 0.05,
+            "experience": 0.15,
         }
 
         # Composite score
@@ -187,9 +188,8 @@ def compute_score_local(province_code: str, ethnicity_code: str, job_id: str, ex
             WEIGHTS["job"] * job_risk
             + WEIGHTS["province"] * province_risk
             + WEIGHTS["ethnicity"] * ethnicity_risk
-            + WEIGHTS["experience"] * experience_component
+            - WEIGHTS["experience"] * experience_component
         )
-
         final_score = clamp(composite, 0.0, 1.0)
 
         return {
@@ -257,7 +257,7 @@ def render_risk_result(result: dict):
     st.subheader("AI Risk Score")
     colA, colB = st.columns([1, 3])
     with colA:
-        st.metric(label="Overall Score (0–1)", value=f"{result['score']:.2f}")
+        st.metric(label="Overall Score (0-1)", value=f"{result['score']:.2f}")
         st.caption(f"Band: **{result['band']}**")
     with colB:
         st.progress(min(max(result["score"], 0.0), 1.0))
@@ -266,7 +266,7 @@ def render_risk_result(result: dict):
     st.markdown("#### Breakdown")
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown("**Components (normalized 0–1)**")
+        st.markdown("**Components (normalized 0-1)**")
         for k, v in result["components"].items():
             st.write(f"- **{k.title()}**: `{v:.2f}`")
     with c2:
@@ -320,7 +320,7 @@ provinces, ethnicities, jobs = load_options()
 prov_disp = [f"{p['name']}" for p in provinces]
 eth_disp  = [f"{e['name']}" for e in ethnicities]
 job_disp  = [j["title"] for j in jobs]
-exp_disp = ["Entry (0–2 years)", "Mid (3–7 years)", "Senior (8+ years)"]
+exp_disp = ["Entry (0-2 years)", "Mid (3-7 years)", "Senior (8+ years)"]
 
 col1, col2 = st.columns(2)
 with col1:
