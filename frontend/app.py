@@ -8,7 +8,6 @@ import sys, os
 import datetime as dt
 from contextlib import closing
 
-
 # add project root (folder that contains 'backend' and 'frontend') to sys.path
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
@@ -19,10 +18,12 @@ from backend.compute import normalize_dimension, compute_job_risk
 
 st.set_page_config(page_title="PathBuilder AI", layout="centered")
 
+
 # ---------- DB helpers ----------
 def db():
     # same DB the rest of the app uses
     return sqlite3.connect("db/risk.db", check_same_thread=False)
+
 
 def list_volunteers(field_filter=None, q=None):
     with closing(db()) as conn, closing(conn.cursor()) as cur:
@@ -41,6 +42,7 @@ def list_volunteers(field_filter=None, q=None):
         cur.execute(sql, params)
         return cur.fetchall()
 
+
 def list_open_slots(volunteer_id):
     with closing(db()) as conn, closing(conn.cursor()) as cur:
         cur.execute("""SELECT slot_id, start_utc, end_utc
@@ -48,6 +50,7 @@ def list_open_slots(volunteer_id):
                        WHERE volunteer_id=? AND is_booked=0
                        ORDER BY start_utc""", (volunteer_id,))
         return cur.fetchall()
+
 
 def create_booking(volunteer_id, slot_id, user_name, user_email, topic):
     with closing(db()) as conn, closing(conn.cursor()) as cur:
@@ -66,44 +69,54 @@ def create_booking(volunteer_id, slot_id, user_name, user_email, topic):
         conn.commit()
         return True, "Session booked! You’ll receive a confirmation in-app."
 
+
 def get_conn():
     # Streamlit runs in a single process; keep connection short-lived
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
+
 def q1(conn, sql, params=()):
     cur = conn.execute(sql, params)
     row = cur.fetchone()
     return dict(row) if row else None
 
+
 def qall(conn, sql, params=()):
     cur = conn.execute(sql, params)
     return [dict(r) for r in cur.fetchall()]
+
 
 def ensure_ready():
     """If normalized tables or job_risk are empty, recompute quickly."""
     with get_conn() as conn:
         # province/ethnicity normalization present?
-        p_cnt = q1(conn, "SELECT COUNT(*) AS c FROM province_risk")["c"] if q1(conn, "SELECT COUNT(*) AS c FROM sqlite_master WHERE type='table' AND name='province_risk'") else 0
-        e_cnt = q1(conn, "SELECT COUNT(*) AS c FROM ethnicity_risk")["c"] if q1(conn, "SELECT COUNT(*) AS c FROM sqlite_master WHERE type='table' AND name='ethnicity_risk'") else 0
-        j_cnt = q1(conn, "SELECT COUNT(*) AS c FROM job_risk")["c"] if q1(conn, "SELECT COUNT(*) AS c FROM sqlite_master WHERE type='table' AND name='job_risk'") else 0
+        p_cnt = q1(conn, "SELECT COUNT(*) AS c FROM province_risk")["c"] if q1(conn,
+                                                                               "SELECT COUNT(*) AS c FROM sqlite_master WHERE type='table' AND name='province_risk'") else 0
+        e_cnt = q1(conn, "SELECT COUNT(*) AS c FROM ethnicity_risk")["c"] if q1(conn,
+                                                                                "SELECT COUNT(*) AS c FROM sqlite_master WHERE type='table' AND name='ethnicity_risk'") else 0
+        j_cnt = q1(conn, "SELECT COUNT(*) AS c FROM job_risk")["c"] if q1(conn,
+                                                                          "SELECT COUNT(*) AS c FROM sqlite_master WHERE type='table' AND name='job_risk'") else 0
 
         if p_cnt == 0:
             normalize_dimension(conn, "province_risk_raw", "province_code", "province_risk", "province_code", "risk")
         if e_cnt == 0:
-            normalize_dimension(conn, "ethnicity_risk_raw", "ethnicity_code", "ethnicity_risk", "ethnicity_code", "risk")
+            normalize_dimension(conn, "ethnicity_risk_raw", "ethnicity_code", "ethnicity_risk", "ethnicity_code",
+                                "risk")
         if j_cnt == 0:
             compute_job_risk(conn)
+
 
 @st.cache_data(ttl=300)
 def load_options():
     ensure_ready()
     with get_conn() as conn:
-        provinces   = qall(conn, "SELECT code, name FROM provinces ORDER BY name")
+        provinces = qall(conn, "SELECT code, name FROM provinces ORDER BY name")
         ethnicities = qall(conn, "SELECT code, name FROM ethnicities ORDER BY name")
-        jobs        = qall(conn, "SELECT job_id, title FROM job_titles ORDER BY title")
+        jobs = qall(conn, "SELECT job_id, title FROM job_titles ORDER BY title")
     return provinces, ethnicities, jobs
+
 
 def get_openai_client() -> OpenAI:
     # Read from Streamlit Secrets in the cloud
@@ -112,6 +125,7 @@ def get_openai_client() -> OpenAI:
         st.error("OPENAI_API_KEY is missing. Add it in Settings → Secrets.")
         st.stop()
     return OpenAI(api_key=OPENAI_API_KEY)
+
 
 # ------------------------------------------------------------
 # Weight tapering by PCS share
@@ -132,6 +146,7 @@ def tapered_weights(pcs_share: float) -> Dict[str, float]:
         "ethnicity": w_e / s if s else 0.0,
         "job": w_j / s if s else 1.0,
     }
+
 
 def band(score: float) -> str:
     if score < 0.33:
@@ -176,14 +191,16 @@ def compute_score_local(province_code: str, ethnicity_code: str, job_id: str):
             "inputs": {
                 "province": q1(conn, "SELECT name FROM provinces WHERE code=?", (province_code,))["name"],
                 "ethnicity": q1(conn, "SELECT name FROM ethnicities WHERE code=?", (ethnicity_code,))["name"],
-                "job": q1(conn, "SELECT title FROM job_titles WHERE job_id=? ORDER BY title LIMIT 1", (job_id,))["title"],
+                "job": q1(conn, "SELECT title FROM job_titles WHERE job_id=? ORDER BY title LIMIT 1", (job_id,))[
+                    "title"],
             },
             "components": {k: round(v, 2) for k, v in components.items()},
             "weights": {k: round(v, 2) for k, v in weights.items()},
             "score": round(score_val, 2),
             "band": band(score_val),
         }
-    
+
+
 def get_job_features_local(job_id: str) -> dict[str, float]:
     with get_conn() as conn:
         row = q1(conn, "SELECT features_json FROM job_features_raw WHERE job_id=?", (job_id,))
@@ -191,16 +208,32 @@ def get_job_features_local(job_id: str) -> dict[str, float]:
             raise RuntimeError(f"No features found for job_id={job_id}")
         return json.loads(row["features_json"])
 
+
 def top_bottom_20_local(features: dict[str, float]) -> tuple[dict[str, float], dict[str, float]]:
     items = sorted(features.items(), key=lambda kv: kv[1], reverse=True)
     top20 = dict(items[:20])
     tail20 = dict(items[-20:])
     return top20, tail20
 
+
 SYSTEM_PROMPT = """
-You are a professional career advisor specialized in AI impact on jobs.
-Create a detailed JSON recommendation based on Canadian occupation classification and AI skill impact scores.
-Maximize detail and reasoning. Ensure each pathway is AI-relevant.
+You are an expert career and labour market advisor specializing in the intersection of occupational skills, technology trends, and AI transformation.
+Your goal is to produce evidence-based, NOC-aligned recommendations that balance realism and future readiness.
+
+Before generating recommendations, internally evaluate whether the occupation meaningfully intersects with AI-driven tasks.
+If not, deprioritize AI tools and instead emphasize industry-specific, human-centric, or compliance-based tools.
+
+Construct detailed recommendations based on the Canadian National Occupational Classification (NOC) and AI skill impact scores.
+Maximize detail and reasoning while ensuring realism and contextual relevance.
+
+If job details or NOC code are missing or unclear, infer the closest match based on title semantics and occupational trends in Canada.
+
+Use the schema below and output ONLY valid JSON — no text or explanations outside it.
+
+Each field value must be a human-readable string (not lists, arrays, or nested objects).
+Keep each text value under 50 words for clarity and consistency.
+
+Use the two most relevant pathways (based on job relevance and future impact) to create the personalized upskilling path, ensuring logical stepwise progression.
 
 IMPORTANT:
 - Output ONLY valid JSON.
@@ -290,8 +323,8 @@ provinces, ethnicities, jobs = load_options()
 
 # Nice display labels for dropdowns
 prov_disp = [f"{p['name']}" for p in provinces]
-eth_disp  = [f"{e['name']}" for e in ethnicities]
-job_disp  = [j["title"] for j in jobs]
+eth_disp = [f"{e['name']}" for e in ethnicities]
+job_disp = [j["title"] for j in jobs]
 
 col1, col2 = st.columns(2)
 with col1:
@@ -306,19 +339,18 @@ tab1, tab2, tab3 = st.tabs(["Risk Score", "Career Pathways (AI Advisor)", "Mento
 with tab1:
     if st.button("Calculate Risk"):
         sel_prov = provinces[prov_disp.index(p_idx)]["code"]
-        sel_eth  = ethnicities[eth_disp.index(e_idx)]["code"]
-        sel_job  = jobs[job_disp.index(j_idx)]["job_id"]
+        sel_eth = ethnicities[eth_disp.index(e_idx)]["code"]
+        sel_job = jobs[job_disp.index(j_idx)]["job_id"]
         try:
             result = compute_score_local(sel_prov, sel_eth, sel_job)
             render_risk_result(result)
         except Exception as ex:
             st.error(str(ex))
 
-
 with tab2:
     st.write("Get tailored career pathways and upskilling steps based on your occupation’s skill profile.")
     if st.button("Generate Career Pathways"):
-        sel_job  = jobs[job_disp.index(j_idx)]["job_id"]
+        sel_job = jobs[job_disp.index(j_idx)]["job_id"]
         job_name = q1(get_conn(), "SELECT title FROM jobs WHERE job_id=?", (sel_job,))["title"]
 
         try:
@@ -348,9 +380,10 @@ with tab2:
             try:
                 payload = json.loads(raw)
             except json.JSONDecodeError:
-                begin = raw.find("{"); end = raw.rfind("}")
+                begin = raw.find("{");
+                end = raw.rfind("}")
                 if begin != -1 and end != -1 and end > begin:
-                    payload = json.loads(raw[begin:end+1])
+                    payload = json.loads(raw[begin:end + 1])
                 else:
                     st.error("Failed to parse JSON from model.")
                     st.code(raw)
@@ -362,7 +395,6 @@ with tab2:
 
         except Exception as ex:
             st.error(str(ex))
-
 
 with tab3:
     st.subheader("Find a student mentor and book a virtual session")
@@ -397,10 +429,10 @@ with tab3:
 
                 # booking form
                 with st.form(f"book_{v_id}"):
-                    u_name  = st.text_input("Your name")
+                    u_name = st.text_input("Your name")
                     u_email = st.text_input("Your email")
-                    topic   = st.text_area("What do you want help with? (optional)")
-                    submit  = st.form_submit_button("Book this session")
+                    topic = st.text_area("What do you want help with? (optional)")
+                    submit = st.form_submit_button("Book this session")
                     if submit:
                         if not u_name or not u_email:
                             st.error("Name and email are required.")
@@ -410,5 +442,3 @@ with tab3:
                                 st.success(msg)
                             else:
                                 st.error(msg)
-
-
