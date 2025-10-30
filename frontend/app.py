@@ -105,6 +105,16 @@ def load_options():
         jobs        = qall(conn, "SELECT job_id, title FROM job_titles ORDER BY title")
     return provinces, ethnicities, jobs
 
+@st.cache_data(ttl=300)
+def fetch_teer_weight(job_id: str) -> float:
+    import sqlite3
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        row = conn.execute("SELECT COALESCE(teer_weight, 0) FROM jobs WHERE job_id = ?", (job_id,)).fetchone()
+        return float(row[0]) if row else 0.0
+    finally:
+        conn.close()
+
 def get_openai_client() -> OpenAI:
     # Read from Streamlit Secrets in the cloud
     OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY")
@@ -145,6 +155,8 @@ def clamp(value: float, low: float = 0.0, high: float = 1.0) -> float:
     """Restrict a numeric value to stay within [low, high]."""
     return max(low, min(high, float(value)))
 
+# Map UI string to multiplier (keep your current labels)
+EXP_MULT = {"Entry (0-2 years)": 1.00, "Mid (3-7 years)": 0.80, "Senior (8+ years)": 0.60}
 
 def compute_score_local(province_code: str, ethnicity_code: str, job_id: str, experience_label: str):
     ensure_ready()
@@ -160,49 +172,57 @@ def compute_score_local(province_code: str, ethnicity_code: str, job_id: str, ex
             if not jr: missing.append("job_risk")
             raise RuntimeError(f"Missing components: {', '.join(missing)}")
 
-        # Base component scores
+        # Base components (0..1)
         province_risk = float(pr["risk"])
         ethnicity_risk = float(er["risk"])
         job_risk = float(jr["risk"])
 
-        # === EXPERIENCE COMPONENT ===
-        teer_val = q1(conn, "SELECT teer FROM jobs WHERE job_id=?", (job_id,))
-        teer_weight = float(teer_val["teer"]) if teer_val and teer_val["teer"] is not None else 0.5
+        # === EXPERIENCE COMPONENT (0..1; HIGHER = MORE RISK) ===
+        # Pull the CSV-provided replaceability weight stored in `jobs.teer_weight`
+        row = q1(conn, "SELECT teer_weight FROM jobs WHERE job_id=?", (job_id,))
+        teer_weight = float(row["teer_weight"]) if row and row["teer_weight"] is not None else 0.0
         teer_weight = clamp(teer_weight, 0.0, 1.0)
-        exp_mult_map = {"Entry (0-2 years)": 1.00, "Mid (3-7 years)": 0.80, "Senior (8+ years)": 0.60}
-        exp_mult = exp_mult_map.get(experience_label, 1.00)
 
-        experience_impact = clamp(teer_weight * exp_mult, 0.0, 1.0)
-        experience_component = 1 - experience_impact  # higher experience → lower added risk
+        # Support both hyphen and en-dash labels from the UI
+        label_norm = experience_label.replace("–", "-")
+        exp_mult_map = {
+            "Entry (0-2 years)": 1.00,
+            "Mid (3-7 years)":   0.80,
+            "Senior (8+ years)": 0.60
+        }
+        exp_mult = exp_mult_map.get(label_norm, 1.00)
 
-        # === WEIGHTS (balanced composite) ===
+        # Risk rises with TEER replaceability and falls with experience seniority
+        experience_component = clamp(teer_weight * exp_mult, 0.0, 1.0)
+
+        # === WEIGHTS (sum = 1.0) ===
         WEIGHTS = {
-            "job": 0.60,
-            "province": 0.15,
-            "ethnicity": 0.10,
+            "job":        0.60,
+            "province":   0.15,
+            "ethnicity":  0.10,
             "experience": 0.15,
         }
 
-        # Composite score
+        # Composite: ADD all components; each is already a 0..1 "more = higher risk"
         composite = (
-            WEIGHTS["job"] * job_risk
-            + WEIGHTS["province"] * province_risk
-            + WEIGHTS["ethnicity"] * ethnicity_risk
-            - WEIGHTS["experience"] * experience_component
+            WEIGHTS["job"]        * job_risk +
+            WEIGHTS["province"]   * province_risk +
+            WEIGHTS["ethnicity"]  * ethnicity_risk +
+            WEIGHTS["experience"] * experience_component
         )
         final_score = clamp(composite, 0.0, 1.0)
 
         return {
             "inputs": {
-                "province": q1(conn, "SELECT name FROM provinces WHERE code=?", (province_code,))["name"],
-                "ethnicity": q1(conn, "SELECT name FROM ethnicities WHERE code=?", (ethnicity_code,))["name"],
-                "job": q1(conn, "SELECT title FROM job_titles WHERE job_id=? ORDER BY title LIMIT 1", (job_id,))["title"],
-                "experience": experience_label,  # NEW
+                "province":   q1(conn, "SELECT name FROM provinces WHERE code=?", (province_code,))["name"],
+                "ethnicity":  q1(conn, "SELECT name FROM ethnicities WHERE code=?", (ethnicity_code,))["name"],
+                "job":        q1(conn, "SELECT title FROM job_titles WHERE job_id=? ORDER BY title LIMIT 1", (job_id,))["title"],
+                "experience": experience_label,
             },
             "components": {
-                "job": round(job_risk, 2),
-                "province": round(province_risk, 2),
-                "ethnicity": round(ethnicity_risk, 2),
+                "job":        round(job_risk, 2),
+                "province":   round(province_risk, 2),
+                "ethnicity":  round(ethnicity_risk, 2),
                 "experience": round(experience_component, 2),
             },
             "weights": WEIGHTS,
