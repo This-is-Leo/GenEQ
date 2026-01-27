@@ -3,7 +3,7 @@
 PathBuilder AI is a workforce navigation prototype that helps users assess their AI job disruption risk, discover personalized upskilling pathways, and connect with volunteer mentors in their field. Built with an equity-first design, it supports workers who face structural barriers in the AI economy.
 
 ### 🔗 Live Demo
-https://gen-eq-pathbuilder.streamlit.app/
+https://path-builder.streamlit.app/
 
 ## 🚧 Problem Statement
 
